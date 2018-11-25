@@ -73,6 +73,8 @@ public class ParkingFrame extends JFrame{
     private URL carPlateURL;
     
     
+    
+    
     private final Color orange		= new Color(248,210,0);
     private final Color darkGray	= new Color(88,88,88);
     
@@ -84,6 +86,9 @@ public class ParkingFrame extends JFrame{
 	private JFormattedTextField timeNewEntry;
 	private JFormattedTextField dateNewEntry;
 	
+	private JFormattedTextField carPlateNewExit;
+	private JFormattedTextField timeNewExit;
+	private JFormattedTextField dateNewExit;	
 	
 	private MaskFormatter fmtTime;   
 	private MaskFormatter fmtDate;
@@ -269,7 +274,7 @@ public class ParkingFrame extends JFrame{
 		timeNewEntry.setHorizontalAlignment(JLabel.CENTER);
 		timeNewEntry.setBorder(BorderFactory.createEmptyBorder());
 		
-		JLabel carPlatePanel = new JLabel(new ImageIcon(carPlateURL));	
+		JLabel carPlateEntryPanel = new JLabel(new ImageIcon(carPlateURL));	
 		
 		carPlateNewEntry = new JFormattedTextField(fmtCarPlate);
 		carPlateNewEntry.setFont(new Font("Unispace", Font.BOLD, 40));
@@ -327,7 +332,7 @@ public class ParkingFrame extends JFrame{
 		newEntryPanel.add(timeNewEntryLabel);
 		newEntryPanel.add(timeNewEntry);
 		newEntryPanel.add(carPlateNewEntry);
-		newEntryPanel.add(carPlatePanel);
+		newEntryPanel.add(carPlateEntryPanel);
 		newEntryPanel.add(confirmEntryButton);
 		newEntryPanel.add(clearEntryButton);
 
@@ -348,12 +353,12 @@ public class ParkingFrame extends JFrame{
 		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeNewEntry, 0, SpringLayout.VERTICAL_CENTER, timeNewEntryLabel);
 		newEntryPanelLayout.putConstraint(SpringLayout.EAST, timeNewEntry, -50, SpringLayout.EAST,newEntryPanel);
 		
-		newEntryPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, carPlatePanel, 2, SpringLayout.HORIZONTAL_CENTER, newEntryPanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, carPlatePanel, -10, SpringLayout.VERTICAL_CENTER,newEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, carPlateEntryPanel, 2, SpringLayout.HORIZONTAL_CENTER, newEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, carPlateEntryPanel, -10, SpringLayout.VERTICAL_CENTER,newEntryPanel);
 		
-		newEntryPanelLayout.putConstraint(SpringLayout.EAST, carPlateNewEntry, 0, SpringLayout.EAST, carPlatePanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.WEST, carPlateNewEntry, 0, SpringLayout.WEST, carPlatePanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateNewEntry, 8, SpringLayout.VERTICAL_CENTER,carPlatePanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.EAST, carPlateNewEntry, 0, SpringLayout.EAST, carPlateEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, carPlateNewEntry, 0, SpringLayout.WEST, carPlateEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateNewEntry, 8, SpringLayout.VERTICAL_CENTER,carPlateEntryPanel);
 		
 		newEntryPanelLayout.putConstraint(SpringLayout.EAST, confirmEntryButton, -20, SpringLayout.HORIZONTAL_CENTER, newEntryPanel);
 		newEntryPanelLayout.putConstraint(SpringLayout.SOUTH, confirmEntryButton, -20, SpringLayout.SOUTH, newEntryPanel);
@@ -363,11 +368,30 @@ public class ParkingFrame extends JFrame{
 		
 		
 		
-		JPanel logNewEntryPanel = new JPanel();
-		//SpringLayout LogNewEntryPanelLayout = new SpringLayout();
-		//newEntryPanel.setLayout(LogNewEntryPanelLayout);
+		
+		SpringLayout logNewEntryPanelLayout = new SpringLayout();
+		JPanel logNewEntryPanel = new JPanel(logNewEntryPanelLayout);
 		logNewEntryPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		logNewEntryPanel.setBackground(Color.darkGray);
+		
+		JPanel logNewEntryLabelPanel = new JPanel();	
+		logNewEntryLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+		logNewEntryLabelPanel.setBackground(orange);
+		
+		JLabel logNewEntryLabel = new JLabel("Últimas atualizações/entradas");
+		logNewEntryLabel.setForeground(Color.BLACK);
+		logNewEntryLabel.setFont(defaultFont);
+		
+		logNewEntryLabelPanel.add(logNewEntryLabel);
+		
+		logNewEntryPanel.add(logNewEntryLabelPanel);
+		
+		
+		logNewEntryPanelLayout.putConstraint(SpringLayout.WEST, logNewEntryLabelPanel, -2, SpringLayout.WEST, logNewEntryPanel);
+		logNewEntryPanelLayout.putConstraint(SpringLayout.EAST, logNewEntryLabelPanel, 2, SpringLayout.EAST, logNewEntryPanel);
+		logNewEntryPanelLayout.putConstraint(SpringLayout.NORTH, logNewEntryLabelPanel, -2, SpringLayout.NORTH,logNewEntryPanel);
+		
+		
 		
 		westPanelModifier.insets = new Insets(10,10,10,10);
 		
@@ -385,10 +409,201 @@ public class ParkingFrame extends JFrame{
 		westPanelModifier.gridy = 1;
 		westPanel.add(logNewEntryPanel, westPanelModifier);
 		
-		//---------------------------------------------------------------------------------------------------------------------------------------East Panel
-		JPanel eastPanel = new JPanel();
+		//---------------------------------------------------------------------------------------------------------------------------------------East Panel		
+		JPanel eastPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints eastPanelModifier = new GridBagConstraints();
 		eastPanel.setBackground(Color.GRAY);
 		
+		SpringLayout newExitPanelLayout = new SpringLayout();
+		JPanel newExitPanel = new JPanel(newExitPanelLayout);
+		newExitPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+		newExitPanel.setBackground(darkGray);
+		
+		JPanel newExitLabelPanel = new JPanel();	
+		newExitLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+		newExitLabelPanel.setBackground(orange);
+		
+		JLabel newExitLabel = new JLabel("Registrar Saída");
+		newExitLabel.setForeground(Color.BLACK);
+		newExitLabel.setFont(defaultFont);
+		
+		newExitLabelPanel.add(newExitLabel);
+		
+		try {
+			fmtTime = new MaskFormatter("##:##");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+        try {
+			fmtDate = new MaskFormatter("##/##/####");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        
+        try {
+			fmtCarPlate = new MaskFormatter("UUU-####");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+     
+        fmtTime.setValidCharacters("0123456789");
+        fmtDate.setValidCharacters("0123456789");
+        fmtCarPlate.setValidCharacters("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	
+		JLabel dateNewExitLabel = new JLabel("Data:");
+		dateNewExitLabel.setFont(defaultFont);
+		dateNewExitLabel.setForeground(Color.BLACK);
+		
+		dateNewExit = new JFormattedTextField(fmtDate);
+		dateNewExit.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
+		dateNewExit.setHorizontalAlignment(JLabel.CENTER);
+		dateNewExit.setBorder(BorderFactory.createEmptyBorder());
+		
+		JLabel timeNewExitLabel = new JLabel("Hora:");
+		timeNewExitLabel.setFont(defaultFont);
+		timeNewExitLabel.setForeground(Color.BLACK);
+		
+		timeNewExit = new JFormattedTextField(fmtTime);
+		timeNewExit.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
+		timeNewExit.setHorizontalAlignment(JLabel.CENTER);
+		timeNewExit.setBorder(BorderFactory.createEmptyBorder());
+		
+		JLabel carPlateExitPanel = new JLabel(new ImageIcon(carPlateURL));	
+		
+		carPlateNewExit = new JFormattedTextField(fmtCarPlate);
+		carPlateNewExit.setFont(new Font("Unispace", Font.BOLD, 40));
+		carPlateNewExit.setBorder(BorderFactory.createEmptyBorder());
+		carPlateNewExit.setOpaque(false);
+		carPlateNewExit.setHorizontalAlignment(JLabel.CENTER);
+		
+		JButton confirmExitButton = new JButton(new ImageIcon(confirmNormalButton));
+		confirmExitButton.setBorder(BorderFactory.createEmptyBorder());
+		confirmExitButton.setContentAreaFilled(false);
+		confirmExitButton.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            	confirmExitButton.setIcon(new ImageIcon(confirmHoveredButton));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	confirmExitButton.setIcon(new ImageIcon(confirmNormalButton));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	confirmExitButton.setIcon(new ImageIcon(confirmClickedButton));
+            }
+        });
+
+
+		JButton clearExitButton = new JButton(new ImageIcon(clearNormalButton));
+		clearExitButton.setBorder(BorderFactory.createEmptyBorder());
+		clearExitButton.setContentAreaFilled(false);
+		clearExitButton.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            	clearExitButton.setIcon(new ImageIcon(clearHoveredButton));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	clearExitButton.setIcon(new ImageIcon(clearNormalButton));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	clearExitButton.setIcon(new ImageIcon(clearClickedButton));
+            }
+        });
+		
+			
+		newExitPanel.add(newExitLabelPanel);
+		newExitPanel.add(dateNewExitLabel);
+		newExitPanel.add(dateNewExit);
+		newExitPanel.add(timeNewExitLabel);
+		newExitPanel.add(timeNewExit);
+		newExitPanel.add(carPlateNewExit);
+		newExitPanel.add(carPlateExitPanel);
+		newExitPanel.add(confirmExitButton);
+		newExitPanel.add(clearExitButton);
+
+		
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, newExitLabelPanel, -2, SpringLayout.WEST, newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, newExitLabelPanel, 2, SpringLayout.EAST, newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, newExitLabelPanel, -2, SpringLayout.NORTH,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExitLabel, 15, SpringLayout.WEST,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExitLabel, 30, SpringLayout.SOUTH, newExitLabelPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExit, 5, SpringLayout.EAST,dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, dateNewExit, 0, SpringLayout.VERTICAL_CENTER, dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, dateNewExit, -50, SpringLayout.EAST,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExitLabel, 15, SpringLayout.WEST,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExitLabel, 20, SpringLayout.SOUTH, dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExit, 0, SpringLayout.WEST,dateNewExit);
+		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeNewExit, 0, SpringLayout.VERTICAL_CENTER, timeNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, timeNewExit, -50, SpringLayout.EAST,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, carPlateExitPanel, 2, SpringLayout.HORIZONTAL_CENTER, newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, carPlateExitPanel, -10, SpringLayout.VERTICAL_CENTER,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, carPlateNewExit, 0, SpringLayout.EAST, carPlateExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, carPlateNewExit, 0, SpringLayout.WEST, carPlateExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateNewExit, 8, SpringLayout.VERTICAL_CENTER,carPlateExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, confirmExitButton, -20, SpringLayout.HORIZONTAL_CENTER, newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.SOUTH, confirmExitButton, -20, SpringLayout.SOUTH, newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, clearExitButton, 20, SpringLayout.HORIZONTAL_CENTER, newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.SOUTH, clearExitButton, -20, SpringLayout.SOUTH, newExitPanel);
+		
+		newExitLabelPanel.add(newExitLabel);	
+		
+		
+		
+		SpringLayout receiptPanelLayout = new SpringLayout();
+		JPanel receiptPanel = new JPanel(receiptPanelLayout);
+		receiptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+		receiptPanel.setBackground(Color.darkGray);
+		
+		JPanel receiptLabelPanel = new JPanel();	
+		receiptLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+		receiptLabelPanel.setBackground(orange);
+		
+		JLabel receiptLabel = new JLabel("Recibo");
+		receiptLabel.setForeground(Color.BLACK);
+		receiptLabel.setFont(defaultFont);
+		
+		receiptLabelPanel.add(receiptLabel);
+		
+		receiptPanel.add(receiptLabelPanel);
+		
+		
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, receiptLabelPanel, -2, SpringLayout.WEST, receiptPanel);
+		receiptPanelLayout.putConstraint(SpringLayout.EAST, receiptLabelPanel, 2, SpringLayout.EAST, receiptPanel);
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, receiptLabelPanel, -2, SpringLayout.NORTH,receiptPanel);
+		
+		
+		
+		eastPanelModifier.insets = new Insets(10,10,10,10);
+		
+		eastPanelModifier.fill = GridBagConstraints.BOTH;
+		eastPanelModifier.weightx = 1;
+		eastPanelModifier.weighty = 1;
+		eastPanelModifier.gridx = 0;
+		eastPanelModifier.gridy = 0;
+		eastPanel.add(newExitPanel, eastPanelModifier);
+		
+		eastPanelModifier.fill = GridBagConstraints.BOTH;
+		eastPanelModifier.weightx = 1;
+		eastPanelModifier.weighty = 1;
+		eastPanelModifier.gridx = 0;
+		eastPanelModifier.gridy = 1;
+		eastPanel.add(receiptPanel, eastPanelModifier);
 		
 		//---------------------------------------------------------------------------------------------------------------------------------------Center Panel
 		JPanel centerPanel = new JPanel();
