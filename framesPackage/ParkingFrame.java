@@ -1,11 +1,16 @@
 package framesPackage;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,16 +18,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
+import javax.swing.Timer;
 import javax.swing.text.MaskFormatter;
 
 //ícone 20x20
@@ -52,8 +62,15 @@ public class ParkingFrame extends JFrame{
     private static String closeHoveredButtonName	= "exitHoveredButton.png";
     private static String closeClickedButtonName	= "exitClickedButton.png";
     
+    private static String carIconLogName 			= "carIconLog.png";
+    private static String bikeIconLogName 			= "motorcycleIconLog.png";
+    private static String miniTruckIconLogName 		= "miniTruckIconLog.png";
+    
     private static String plateName					= "placa.png";
     
+    private URL carIconLogURL;
+    private URL bikeIconLogURL;
+    private URL miniTruckIconLogURL;
     
     private URL configNormalButton;
     private URL configHoveredButton;
@@ -71,15 +88,15 @@ public class ParkingFrame extends JFrame{
     private URL closeHoveredButton;
     private URL closeClickedButton;
     private URL carPlateURL;
+   
     
-    
-    
-    
-    private final Color orange		= new Color(248,210,0);
-    private final Color darkGray	= new Color(88,88,88);
+    private final Color orange			= new Color(248,210,0);
+    private final Color darkGray		= new Color(88,88,88);
+    private final Color carPlateColor 	= new Color(49,49,49);
     
     
 	public static Font defaultFont	= new Font("Trebuchet MS", Font.BOLD, 22);
+	public static Font carPlateFont	= new Font("Unispace", Font.BOLD, 40);
 	
 	
 	private JFormattedTextField carPlateNewEntry;
@@ -93,6 +110,17 @@ public class ParkingFrame extends JFrame{
 	private MaskFormatter fmtTime;   
 	private MaskFormatter fmtDate;
 	private MaskFormatter fmtCarPlate;
+	
+	
+	private ArrayList<JPanel> logList = new ArrayList<JPanel>();//testes!
+	//private ArrayList<JLabel> carPlateLog = new ArrayList();
+	//private ArrayList<ImageIcon> carPlateIconLog = new ArrayList();
+	private JPanel logNewEntryPanel;
+    private SpringLayout logNewEntryPanelLayout;
+    private JPanel logsEntryPanel;
+    
+    private Dictionary<String, URL> logImages;
+  
 	
 	
 	public ParkingFrame() {
@@ -125,6 +153,12 @@ public class ParkingFrame extends JFrame{
 		GridBagConstraints modifier = new GridBagConstraints();
         
         getUIResources();
+        
+        String[] vehicleTypesName = { "Carro", "Moto", "Caminhonete" };
+        logImages = new Hashtable<String, URL>();
+        logImages.put(vehicleTypesName[0], carIconLogURL);
+        logImages.put(vehicleTypesName[1], bikeIconLogURL);
+        logImages.put(vehicleTypesName[2], miniTruckIconLogURL);
         
         
         //---------------------------------------------------------------------------------------------------------------------------------------MenuPanel
@@ -274,10 +308,20 @@ public class ParkingFrame extends JFrame{
 		timeNewEntry.setHorizontalAlignment(JLabel.CENTER);
 		timeNewEntry.setBorder(BorderFactory.createEmptyBorder());
 		
+		JLabel vehicleTypeEntryLabel = new JLabel("Veículo:");
+		vehicleTypeEntryLabel.setFont(defaultFont);
+		vehicleTypeEntryLabel.setForeground(Color.BLACK);
+		
+		JComboBox<String> vehicleTypeEntryComboBox = new JComboBox<String>(vehicleTypesName);
+		vehicleTypeEntryComboBox.setEditable(false);
+		vehicleTypeEntryComboBox.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
+		
+		
 		JLabel carPlateEntryPanel = new JLabel(new ImageIcon(carPlateURL));	
 		
 		carPlateNewEntry = new JFormattedTextField(fmtCarPlate);
-		carPlateNewEntry.setFont(new Font("Unispace", Font.BOLD, 40));
+		carPlateNewEntry.setForeground(carPlateColor);
+		carPlateNewEntry.setFont(carPlateFont);
 		carPlateNewEntry.setBorder(BorderFactory.createEmptyBorder());
 		carPlateNewEntry.setOpaque(false);
 		carPlateNewEntry.setHorizontalAlignment(JLabel.CENTER);
@@ -327,6 +371,8 @@ public class ParkingFrame extends JFrame{
 		
 			
 		newEntryPanel.add(newEntryLabelPanel);
+		newEntryPanel.add(vehicleTypeEntryComboBox);
+		newEntryPanel.add(vehicleTypeEntryLabel);
 		newEntryPanel.add(dateNewEntryLabel);
 		newEntryPanel.add(dateNewEntry);
 		newEntryPanel.add(timeNewEntryLabel);
@@ -335,26 +381,36 @@ public class ParkingFrame extends JFrame{
 		newEntryPanel.add(carPlateEntryPanel);
 		newEntryPanel.add(confirmEntryButton);
 		newEntryPanel.add(clearEntryButton);
+		
 
 		
 		newEntryPanelLayout.putConstraint(SpringLayout.WEST, newEntryLabelPanel, -2, SpringLayout.WEST, newEntryPanel);
 		newEntryPanelLayout.putConstraint(SpringLayout.EAST, newEntryLabelPanel, 2, SpringLayout.EAST, newEntryPanel);
 		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, newEntryLabelPanel, -2, SpringLayout.NORTH,newEntryPanel);
 		
-		newEntryPanelLayout.putConstraint(SpringLayout.WEST, dateNewEntryLabel, 15, SpringLayout.WEST,newEntryPanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, dateNewEntryLabel, 30, SpringLayout.SOUTH, newEntryLabelPanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.WEST, dateNewEntry, 5, SpringLayout.EAST,dateNewEntryLabel);
-		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, dateNewEntry, 0, SpringLayout.VERTICAL_CENTER, dateNewEntryLabel);
-		newEntryPanelLayout.putConstraint(SpringLayout.EAST, dateNewEntry, -50, SpringLayout.EAST,newEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, vehicleTypeEntryLabel, 15, SpringLayout.SOUTH, newEntryLabelPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeEntryLabel, 20, SpringLayout.WEST,newEntryPanel);
 		
-		newEntryPanelLayout.putConstraint(SpringLayout.WEST, timeNewEntryLabel, 15, SpringLayout.WEST,newEntryPanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, timeNewEntryLabel, 20, SpringLayout.SOUTH, dateNewEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, vehicleTypeEntryComboBox, 0, SpringLayout.VERTICAL_CENTER, vehicleTypeEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeEntryComboBox, 5, SpringLayout.EAST,vehicleTypeEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.EAST, vehicleTypeEntryComboBox, -40, SpringLayout.EAST,newEntryPanel);
+		
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, dateNewEntryLabel, 0, SpringLayout.WEST,vehicleTypeEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, dateNewEntryLabel, 10, SpringLayout.SOUTH, vehicleTypeEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, dateNewEntry, 5, SpringLayout.EAST,dateNewEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.EAST, dateNewEntry, 0, SpringLayout.EAST,vehicleTypeEntryComboBox);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, dateNewEntry, 0, SpringLayout.NORTH,dateNewEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.SOUTH, dateNewEntry, 0, SpringLayout.SOUTH,dateNewEntryLabel);
+		
+		newEntryPanelLayout.putConstraint(SpringLayout.WEST, timeNewEntryLabel, 0, SpringLayout.WEST,dateNewEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, timeNewEntryLabel, 10, SpringLayout.SOUTH, dateNewEntryLabel);
 		newEntryPanelLayout.putConstraint(SpringLayout.WEST, timeNewEntry, 0, SpringLayout.WEST,dateNewEntry);
-		newEntryPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeNewEntry, 0, SpringLayout.VERTICAL_CENTER, timeNewEntryLabel);
-		newEntryPanelLayout.putConstraint(SpringLayout.EAST, timeNewEntry, -50, SpringLayout.EAST,newEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.EAST, timeNewEntry, 0, SpringLayout.EAST,dateNewEntry);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, timeNewEntry, 0, SpringLayout.NORTH,timeNewEntryLabel);
+		newEntryPanelLayout.putConstraint(SpringLayout.SOUTH, timeNewEntry, 0, SpringLayout.SOUTH,timeNewEntryLabel);
 		
 		newEntryPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, carPlateEntryPanel, 2, SpringLayout.HORIZONTAL_CENTER, newEntryPanel);
-		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, carPlateEntryPanel, -10, SpringLayout.VERTICAL_CENTER,newEntryPanel);
+		newEntryPanelLayout.putConstraint(SpringLayout.NORTH, carPlateEntryPanel, 0, SpringLayout.VERTICAL_CENTER,newEntryPanel);
 		
 		newEntryPanelLayout.putConstraint(SpringLayout.EAST, carPlateNewEntry, 0, SpringLayout.EAST, carPlateEntryPanel);
 		newEntryPanelLayout.putConstraint(SpringLayout.WEST, carPlateNewEntry, 0, SpringLayout.WEST, carPlateEntryPanel);
@@ -369,8 +425,8 @@ public class ParkingFrame extends JFrame{
 		
 		
 		
-		SpringLayout logNewEntryPanelLayout = new SpringLayout();
-		JPanel logNewEntryPanel = new JPanel(logNewEntryPanelLayout);
+		logNewEntryPanelLayout = new SpringLayout();
+		logNewEntryPanel = new JPanel(logNewEntryPanelLayout);
 		logNewEntryPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		logNewEntryPanel.setBackground(Color.darkGray);
 		
@@ -378,19 +434,28 @@ public class ParkingFrame extends JFrame{
 		logNewEntryLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
 		logNewEntryLabelPanel.setBackground(orange);
 		
-		JLabel logNewEntryLabel = new JLabel("Últimas atualizações/entradas");
+		JLabel logNewEntryLabel = new JLabel("Últimas Entradas");
 		logNewEntryLabel.setForeground(Color.BLACK);
 		logNewEntryLabel.setFont(defaultFont);
+		
+		SpringLayout logsEntryPanelLayout = new SpringLayout();
+		logsEntryPanel = new JPanel(logsEntryPanelLayout);
+		logsEntryPanel.setOpaque(false);
 		
 		logNewEntryLabelPanel.add(logNewEntryLabel);
 		
 		logNewEntryPanel.add(logNewEntryLabelPanel);
+		logNewEntryPanel.add(logsEntryPanel);
 		
 		
 		logNewEntryPanelLayout.putConstraint(SpringLayout.WEST, logNewEntryLabelPanel, -2, SpringLayout.WEST, logNewEntryPanel);
 		logNewEntryPanelLayout.putConstraint(SpringLayout.EAST, logNewEntryLabelPanel, 2, SpringLayout.EAST, logNewEntryPanel);
 		logNewEntryPanelLayout.putConstraint(SpringLayout.NORTH, logNewEntryLabelPanel, -2, SpringLayout.NORTH,logNewEntryPanel);
 		
+		logNewEntryPanelLayout.putConstraint(SpringLayout.WEST, logsEntryPanel, 0, SpringLayout.WEST, logNewEntryPanel);
+		logNewEntryPanelLayout.putConstraint(SpringLayout.EAST, logsEntryPanel, 0, SpringLayout.EAST, logNewEntryPanel);
+		logNewEntryPanelLayout.putConstraint(SpringLayout.NORTH, logsEntryPanel, 0, SpringLayout.SOUTH,logNewEntryLabelPanel);
+		logNewEntryPanelLayout.putConstraint(SpringLayout.SOUTH, logsEntryPanel, 0, SpringLayout.SOUTH,logNewEntryPanel);
 		
 		
 		westPanelModifier.insets = new Insets(10,10,10,10);
@@ -469,10 +534,19 @@ public class ParkingFrame extends JFrame{
 		timeNewExit.setHorizontalAlignment(JLabel.CENTER);
 		timeNewExit.setBorder(BorderFactory.createEmptyBorder());
 		
+		JLabel vehicleTypeExitLabel = new JLabel("Veículo:");
+		vehicleTypeExitLabel.setFont(defaultFont);
+		vehicleTypeExitLabel.setForeground(Color.BLACK);
+		
+		JComboBox<String> vehicleTypeExitComboBox = new JComboBox<String>(vehicleTypesName);
+		vehicleTypeExitComboBox.setEditable(false);
+		vehicleTypeExitComboBox.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
+		
 		JLabel carPlateExitPanel = new JLabel(new ImageIcon(carPlateURL));	
 		
 		carPlateNewExit = new JFormattedTextField(fmtCarPlate);
-		carPlateNewExit.setFont(new Font("Unispace", Font.BOLD, 40));
+		carPlateNewExit.setForeground(carPlateColor);
+		carPlateNewExit.setFont(carPlateFont);
 		carPlateNewExit.setBorder(BorderFactory.createEmptyBorder());
 		carPlateNewExit.setOpaque(false);
 		carPlateNewExit.setHorizontalAlignment(JLabel.CENTER);
@@ -522,6 +596,8 @@ public class ParkingFrame extends JFrame{
 		
 			
 		newExitPanel.add(newExitLabelPanel);
+		newExitPanel.add(vehicleTypeExitComboBox);
+		newExitPanel.add(vehicleTypeExitLabel);
 		newExitPanel.add(dateNewExitLabel);
 		newExitPanel.add(dateNewExit);
 		newExitPanel.add(timeNewExitLabel);
@@ -536,20 +612,31 @@ public class ParkingFrame extends JFrame{
 		newExitPanelLayout.putConstraint(SpringLayout.EAST, newExitLabelPanel, 2, SpringLayout.EAST, newExitPanel);
 		newExitPanelLayout.putConstraint(SpringLayout.NORTH, newExitLabelPanel, -2, SpringLayout.NORTH,newExitPanel);
 		
-		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExitLabel, 15, SpringLayout.WEST,newExitPanel);
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExitLabel, 30, SpringLayout.SOUTH, newExitLabelPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, vehicleTypeExitLabel, 15, SpringLayout.SOUTH, newExitLabelPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeExitLabel, 20, SpringLayout.WEST,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, vehicleTypeExitComboBox, 0, SpringLayout.VERTICAL_CENTER, vehicleTypeExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeExitComboBox, 5, SpringLayout.EAST,vehicleTypeExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, vehicleTypeExitComboBox, -40, SpringLayout.EAST,newExitPanel);
+		
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExitLabel, 0, SpringLayout.WEST,vehicleTypeExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExitLabel, 10, SpringLayout.SOUTH, vehicleTypeExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExit, 5, SpringLayout.EAST,dateNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, dateNewExit, 0, SpringLayout.VERTICAL_CENTER, dateNewExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.EAST, dateNewExit, -50, SpringLayout.EAST,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, dateNewExit, 0, SpringLayout.EAST,vehicleTypeExitComboBox);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExit, 0, SpringLayout.NORTH,dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.SOUTH, dateNewExit, 0, SpringLayout.SOUTH,dateNewExitLabel);
 		
-		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExitLabel, 15, SpringLayout.WEST,newExitPanel);
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExitLabel, 20, SpringLayout.SOUTH, dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExitLabel, 0, SpringLayout.WEST,dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExitLabel, 10, SpringLayout.SOUTH, dateNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExit, 0, SpringLayout.WEST,dateNewExit);
 		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeNewExit, 0, SpringLayout.VERTICAL_CENTER, timeNewExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.EAST, timeNewExit, -50, SpringLayout.EAST,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, timeNewExit, 0, SpringLayout.EAST,dateNewExit);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExit, 0, SpringLayout.NORTH,timeNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.SOUTH, timeNewExit, 0, SpringLayout.SOUTH,timeNewExitLabel);
 		
 		newExitPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, carPlateExitPanel, 2, SpringLayout.HORIZONTAL_CENTER, newExitPanel);
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, carPlateExitPanel, -10, SpringLayout.VERTICAL_CENTER,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, carPlateExitPanel, 0, SpringLayout.VERTICAL_CENTER,newExitPanel);
 		
 		newExitPanelLayout.putConstraint(SpringLayout.EAST, carPlateNewExit, 0, SpringLayout.EAST, carPlateExitPanel);
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, carPlateNewExit, 0, SpringLayout.WEST, carPlateExitPanel);
@@ -676,6 +763,84 @@ public class ParkingFrame extends JFrame{
 			}
         	
         });
+        
+        clearEntryButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				clearEntry();
+			}
+        	
+        });
+        
+        clearExitButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				clearExit();
+			}
+        	
+        });
+        
+        confirmEntryButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {			
+				int distance = 0, distanceInc = logsEntryPanel.getHeight()/3;
+				
+				logList.add(setNewVehicleLog((String)vehicleTypeEntryComboBox.getSelectedItem(), carPlateNewEntry.getText(), dateNewEntry.getText(), timeNewEntry.getText()));
+				
+				
+				if(logList.size()<=3)
+				{
+					for(JPanel log : logList)
+					{
+						logsEntryPanel.add(log);
+						
+						logsEntryPanelLayout.putConstraint(SpringLayout.EAST, log, 0, SpringLayout.EAST, logsEntryPanel);
+						logsEntryPanelLayout.putConstraint(SpringLayout.WEST, log, 0, SpringLayout.WEST, logsEntryPanel);
+						logsEntryPanelLayout.putConstraint(SpringLayout.NORTH, log, distance, SpringLayout.NORTH, logsEntryPanel);
+						distance+=distanceInc;
+						logsEntryPanelLayout.putConstraint(SpringLayout.SOUTH, log, distance, SpringLayout.NORTH, logsEntryPanel);					
+					}
+				}
+				else
+				{
+					logsEntryPanel.removeAll();
+					for(int i=logList.size()-3 ; i<logList.size() ; i++)
+					{
+						logsEntryPanel.add(logList.get(i));
+						
+						logsEntryPanelLayout.putConstraint(SpringLayout.EAST, logList.get(i), 0, SpringLayout.EAST, logsEntryPanel);
+						logsEntryPanelLayout.putConstraint(SpringLayout.WEST, logList.get(i), 0, SpringLayout.WEST, logsEntryPanel);
+						logsEntryPanelLayout.putConstraint(SpringLayout.NORTH, logList.get(i), distance, SpringLayout.NORTH, logsEntryPanel);
+						distance+=distanceInc;
+						logsEntryPanelLayout.putConstraint(SpringLayout.SOUTH, logList.get(i), distance, SpringLayout.NORTH, logsEntryPanel);					
+					}
+				}				
+				
+				revalidate();
+				repaint();
+				
+				clearEntry();
+				
+			}
+        	
+        });
+        
+//        Timer tm = new Timer(3000,new ActionListener(){
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	
+//        		icon = new ImageIcon(listImg[whichImg]);
+//        		imagem.setIcon(icon);
+//        		repaint();
+//            	revalidate();
+//            	if(whichImg >= listImg.length-1) whichImg = 0;
+//            	else whichImg++;
+//            }
+//        });
+//		//tm.setInitialDelay(1000);
+//		tm.start();
        
 	}
 	
@@ -701,6 +866,79 @@ public class ParkingFrame extends JFrame{
         closeClickedButton		= ParkingFrame.class.getResource(closeClickedButtonName);
         
 	    carPlateURL 			= ParkingFrame.class.getResource(plateName);
+	    
+	    carIconLogURL			= ParkingFrame.class.getResource(carIconLogName);
+	    bikeIconLogURL			= ParkingFrame.class.getResource(bikeIconLogName);
+	    miniTruckIconLogURL			= ParkingFrame.class.getResource(miniTruckIconLogName);
+	}
+	
+	private void clearEntry() {
+		dateNewEntry.setText("");
+		timeNewEntry.setText("");
+		carPlateNewEntry.setText("");
+	}
+	
+	private void clearExit() {
+		dateNewExit.setText("");
+		timeNewExit.setText("");
+		carPlateNewExit.setText("");
+	}
+	
+	@SuppressWarnings("null")
+	private JPanel setNewVehicleLog(String iconType, String carPlateSelected, String dateEntryLog, String timeEntryLog){		
+		SpringLayout newLogPanelLayout = new SpringLayout();
+		JPanel newLogPanel = new JPanel(newLogPanelLayout);
+		newLogPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+		newLogPanel.setBackground(Color.GRAY);
+		//newLogPanel.setOpaque(false);
+		//newLogPanel.setPreferredSize(new Dimension(100, 30));
+		
+		JLabel dateLog = new JLabel("Data de entrada: " + dateEntryLog);
+		dateLog.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		dateLog.setForeground(Color.BLACK);
+		
+		JLabel timeLog = new JLabel("Horário de entrada: " + timeEntryLog);
+		timeLog.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		timeLog.setForeground(Color.BLACK);
+		
+		JLabel carPlateLogName = new JLabel("Placa: ");
+		carPlateLogName.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		carPlateLogName.setForeground(Color.BLACK);
+		JLabel carPlateLog = new JLabel(carPlateNewEntry.getText());
+		carPlateLog.setFont(carPlateFont.deriveFont(Font.BOLD, 18));
+		carPlateLog.setForeground(Color.BLACK);
+		
+		JLabel carPlateIconLog = new JLabel(new ImageIcon(logImages.get(iconType)));
+		
+		newLogPanel.add(dateLog);
+		newLogPanel.add(timeLog);
+		newLogPanel.add(carPlateLogName);
+		newLogPanel.add(carPlateLog);
+		newLogPanel.add(carPlateIconLog);
+		
+		
+		newLogPanelLayout.putConstraint(SpringLayout.WEST, timeLog, 10, SpringLayout.WEST, newLogPanel);
+		newLogPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeLog, 0, SpringLayout.VERTICAL_CENTER, newLogPanel);
+		
+		newLogPanelLayout.putConstraint(SpringLayout.WEST, carPlateLogName, 10, SpringLayout.WEST, newLogPanel);
+		newLogPanelLayout.putConstraint(SpringLayout.NORTH, carPlateLogName, 10, SpringLayout.SOUTH, timeLog);
+		
+		newLogPanelLayout.putConstraint(SpringLayout.WEST, carPlateLog, 8, SpringLayout.EAST, carPlateLogName);
+		newLogPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateLog, 0, SpringLayout.VERTICAL_CENTER, carPlateLogName);
+		
+		newLogPanelLayout.putConstraint(SpringLayout.WEST, dateLog, 10, SpringLayout.WEST, newLogPanel);
+		newLogPanelLayout.putConstraint(SpringLayout.SOUTH, dateLog, -10, SpringLayout.NORTH, timeLog);
+		
+		newLogPanelLayout.putConstraint(SpringLayout.EAST, carPlateIconLog, -10, SpringLayout.EAST, newLogPanel);
+		newLogPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateIconLog, 0, SpringLayout.VERTICAL_CENTER, newLogPanel);
+		
+		
+		
+		//Graphics2D g2 = null;
+		//g2.setPaint(new GradientPaint(logsEntryPanel.getHeight(),logsEntryPanel.getHeight(),Color.WHITE,logsEntryPanel.getWidth(),logsEntryPanel.getWidth(),Color.RED));
+		//g2.fill((Shape) newLogPanel);
+		
+		return newLogPanel;
 	}
 
 }
