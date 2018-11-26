@@ -8,17 +8,10 @@ public class Slot {
 	
 	private Vehicle vehicle;
 	
-	private VehicleType slotType;
-	
-	public Slot(VehicleType slotType) {
+	public Slot() {
 		
-		this.slotType = slotType;
 		disponibility = true;
 		
-	}
-	
-	public boolean getDisponibility() {
-		return disponibility;
 	}
 	
 	
@@ -26,7 +19,7 @@ public class Slot {
 		
 		boolean output = false;
 		
-		if(newVehicle.getType().equals(slotType)) {
+		if(disponibility) {
 			vehicle = newVehicle;
 			disponibility = false;
 			output = true;
@@ -36,7 +29,11 @@ public class Slot {
 	}
 	
 	public void removeVehicle() {
-		if (vehicle!= null) vehicle = null;
+		
+		if (vehicle!= null) {
+			vehicle = null;
+			disponibility = true;
+		}
 	}
 	
 	public Vehicle getVehicle() {
