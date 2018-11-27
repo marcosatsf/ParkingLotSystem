@@ -25,14 +25,13 @@ public class ParkingLot {
 		return caixa.getMultCar();
 	}
 	
-	public ArrayList<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots 
-		for(Floor f : parkingLot)
-		{
-			for(Vehicle each : f.getSlots()){
-				
-			}
+	public ArrayList<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots
+		ArrayList<Vehicle> vehicles = (ArrayList<Vehicle>) parkingLot.get(whichFloor).getSlots();
+		ArrayList<VehicleType> vTypes = new ArrayList<VehicleType>();
+		for(Vehicle each : vehicles){
+			vTypes.add(each.getType());
 		}
-		return parkingLot.get(whichFloor).getSlots();
+		return vTypes;
 	}
 	
 	//public ArrayList<Boolean> getSlotsDisponibility(int whichFloor){
