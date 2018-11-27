@@ -1,16 +1,11 @@
 package framesPackage;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import javax.swing.Timer;
 import javax.swing.text.MaskFormatter;
 
 //ícone 20x20
@@ -156,7 +150,7 @@ public class ParkingFrame extends JFrame{
 		super.setMinimumSize(new Dimension(1080,720));
 		
 		setUndecorated(true);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);	
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation((dim.width - this.getSize().width)/2, (dim.height - this.getSize().height)/2);
@@ -859,6 +853,15 @@ public class ParkingFrame extends JFrame{
 				{
                     System.exit(0);
                 }
+			}
+        	
+        });
+        
+        configButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new ConfigurationFrame(ParkingFrame.this);
 			}
         	
         });

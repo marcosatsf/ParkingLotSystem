@@ -15,10 +15,16 @@ public class Bank {
 	//private Dictionary<String,LocalDateTime> y;
 	private Dictionary<LocalDateTime,List<Float>> plateToValue;//valores pagos naquele dia
 	
-	
 	private Bank(){
+		this(10,5,15);
+	}
+	
+	private Bank(float carMult,float motorcycleMult, float miniTruckMult){
 		vehicleOutByDay = new Hashtable<LocalDateTime,List<Vehicle>>();
 		plateToValue = new Hashtable<LocalDateTime,List<Float>>();
+		this.carMult = carMult;
+		this.motorcycleMult = motorcycleMult;
+		this.miniTruckMult = miniTruckMult;
 	}
 
 	public static Bank getInstance(){
@@ -30,6 +36,19 @@ public class Bank {
 		this.carMult = carMult;
 		this.motorcycleMult = motorcycleMult;
 		this.miniTruckMult = miniTruckMult;
+	}
+	
+	public float getMultCar()
+	{
+		return carMult;
+	}
+	public float getMultMotorcycle()
+	{
+		return motorcycleMult;
+	}
+	public float getMultMiniTruck()
+	{
+		return miniTruckMult;
 	}
 	
 	public void addVehicleOutByDay(LocalDateTime k, Vehicle v, float value){
