@@ -62,9 +62,19 @@ public class ParkingFrame extends JFrame{
     private static String closeHoveredButtonName	= "exitHoveredButton.png";
     private static String closeClickedButtonName	= "exitClickedButton.png";
     
+    private static String floor0NormalButtonName	= "floor0Normal.png";
+    private static String floor0HoveredButtonName	= "floor0Hovered.png";
+    private static String floor0ClickedButtonName	= "floor0Clicked.png";
+    
+    private static String floor1NormalButtonName	= "floor1Normal.png";
+    private static String floor1HoveredButtonName	= "floor1Hovered.png";
+    private static String floor1ClickedButtonName	= "floor1Clicked.png";
+    
     private static String carIconLogName 			= "carIconLog.png";
     private static String bikeIconLogName 			= "motorcycleIconLog.png";
     private static String miniTruckIconLogName 		= "miniTruckIconLog.png";
+    
+    
     
     private static String plateName					= "placa.png";
     
@@ -75,18 +85,31 @@ public class ParkingFrame extends JFrame{
     private URL configNormalButton;
     private URL configHoveredButton;
     private URL configClickedButton;
+    
     private URL bankNormalButton;
     private URL bankHoveredButton;
     private URL bankClickedButton;
+    
     private URL confirmNormalButton;
     private URL confirmHoveredButton;
     private URL confirmClickedButton;
+    
     private URL clearNormalButton;
     private URL clearHoveredButton;
     private URL clearClickedButton;
+    
     private URL closeNormalButton;
     private URL closeHoveredButton;
     private URL closeClickedButton;
+    
+    private URL floor0NormalButton;
+    private URL floor0HoveredButton;
+    private URL floor0ClickedButton;
+    
+    private URL floor1NormalButton;
+    private URL floor1HoveredButton;
+    private URL floor1ClickedButton;
+    
     private URL carPlateURL;
    
     
@@ -121,7 +144,8 @@ public class ParkingFrame extends JFrame{
     
     private Dictionary<String, URL> logImages;
   
-	
+    private boolean floorTSelected = false;
+    private boolean floor1Selected = false;
 	
 	public ParkingFrame() {
 		
@@ -270,17 +294,7 @@ public class ParkingFrame extends JFrame{
 		
 		try {
 			fmtTime = new MaskFormatter("##:##");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-        try {
 			fmtDate = new MaskFormatter("##/##/####");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-        
-        try {
 			fmtCarPlate = new MaskFormatter("UUU-####");
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -496,17 +510,7 @@ public class ParkingFrame extends JFrame{
 		
 		try {
 			fmtTime = new MaskFormatter("##:##");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-        try {
 			fmtDate = new MaskFormatter("##/##/####");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-        
-        try {
 			fmtCarPlate = new MaskFormatter("UUU-####");
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -693,12 +697,107 @@ public class ParkingFrame extends JFrame{
 		eastPanel.add(receiptPanel, eastPanelModifier);
 		
 		//---------------------------------------------------------------------------------------------------------------------------------------Center Panel
-		JPanel centerPanel = new JPanel();
+		JPanel centerPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints centerPanelModifier = new GridBagConstraints();
 		centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.BLACK));
-		centerPanel.setBackground(Color.GRAY);	
-        
+		centerPanel.setBackground(Color.GRAY);
+		
+		JPanel mapPanel = new JPanel();
+		
+		SpringLayout floorSelectionPanelLayout = new SpringLayout();
+		JPanel floorSelectionPanel = new JPanel(floorSelectionPanelLayout);	
+		floorSelectionPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
+		floorSelectionPanel.setBackground(darkGray);
+		
+		JLabel floorIndicatorLabel = new JLabel("Piso -");
+		floorIndicatorLabel.setForeground(Color.BLACK);
+		floorIndicatorLabel.setFont(defaultFont.deriveFont(Font.BOLD,40));
 		
 		
+		JButton floorTButton = new JButton(new ImageIcon(floor0NormalButton));
+		floorTButton.setBorder(BorderFactory.createEmptyBorder());
+		floorTButton.setContentAreaFilled(false);
+		floorTButton.setFocusable(false);
+		
+		JButton floor1Button = new JButton(new ImageIcon(floor1NormalButton));
+		floor1Button.setBorder(BorderFactory.createEmptyBorder());
+		floor1Button.setContentAreaFilled(false);
+		floor1Button.setFocusable(false);
+		
+		floorTButton.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            	if(!floorTSelected) floorTButton.setIcon(new ImageIcon(floor0HoveredButton));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	if(!floorTSelected)	floorTButton.setIcon(new ImageIcon(floor0NormalButton));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	floorTButton.setIcon(new ImageIcon(floor0ClickedButton));
+            	floor1Button.setIcon(new ImageIcon(floor1NormalButton));
+            	floorIndicatorLabel.setText("Piso T");
+            	floorTSelected = true;
+            	floor1Selected = false;
+            }
+        });
+		
+		floor1Button.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            	if(!floor1Selected) floor1Button.setIcon(new ImageIcon(floor1HoveredButton));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	if(!floor1Selected) floor1Button.setIcon(new ImageIcon(floor1NormalButton));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	floor1Button.setIcon(new ImageIcon(floor1ClickedButton));
+            	floorTButton.setIcon(new ImageIcon(floor0NormalButton));
+            	floorIndicatorLabel.setText("Piso 1");
+            	floorTSelected = false;
+            	floor1Selected = true;
+            }
+        });
+		
+		floorSelectionPanel.add(floorTButton);
+		floorSelectionPanel.add(floorIndicatorLabel);
+		floorSelectionPanel.add(floor1Button);
+		
+		floorSelectionPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, floorIndicatorLabel, 0, SpringLayout.VERTICAL_CENTER, floorSelectionPanel);
+		floorSelectionPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, floorIndicatorLabel, 0, SpringLayout.HORIZONTAL_CENTER, floorSelectionPanel);
+		
+		floorSelectionPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, floorTButton, 0, SpringLayout.VERTICAL_CENTER, floorIndicatorLabel);
+		floorSelectionPanelLayout.putConstraint(SpringLayout.EAST, floorTButton, -160, SpringLayout.WEST, floorIndicatorLabel);
+		
+		floorSelectionPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, floor1Button, 0, SpringLayout.VERTICAL_CENTER, floorIndicatorLabel);
+		floorSelectionPanelLayout.putConstraint(SpringLayout.WEST, floor1Button, 160, SpringLayout.EAST, floorIndicatorLabel);
+		
+		centerPanelModifier.insets = new Insets(10,10,10,10);
+		
+		centerPanelModifier.gridx = 0;
+		centerPanelModifier.gridy = 0;
+		centerPanelModifier.fill = GridBagConstraints.BOTH;
+		centerPanelModifier.weighty = 1;
+		centerPanelModifier.weightx = 1;
+		centerPanel.add(mapPanel, centerPanelModifier);
+		
+		centerPanelModifier.insets = new Insets(0,10,10,10);
+		
+		centerPanelModifier.gridx = 0;
+		centerPanelModifier.gridy = 1;
+		centerPanelModifier.fill = GridBagConstraints.BOTH;
+		centerPanelModifier.weighty = 0.15;
+		centerPanelModifier.weightx = 1;
+		centerPanel.add(floorSelectionPanel, centerPanelModifier);	
 		
 		//---------------------------------------------------------------------------------------------------------------------------------------Constraints MenuPanel
 		modifier.gridx = 0;
@@ -864,6 +963,14 @@ public class ParkingFrame extends JFrame{
         closeNormalButton		= ParkingFrame.class.getResource(closeNormalButtonName);
         closeHoveredButton		= ParkingFrame.class.getResource(closeHoveredButtonName);
         closeClickedButton		= ParkingFrame.class.getResource(closeClickedButtonName);
+
+        floor0NormalButton		= ParkingFrame.class.getResource(floor0NormalButtonName);
+        floor0HoveredButton		= ParkingFrame.class.getResource(floor0HoveredButtonName);
+        floor0ClickedButton		= ParkingFrame.class.getResource(floor0ClickedButtonName);
+        
+        floor1NormalButton		= ParkingFrame.class.getResource(floor1NormalButtonName);
+        floor1HoveredButton		= ParkingFrame.class.getResource(floor1HoveredButtonName);
+        floor1ClickedButton		= ParkingFrame.class.getResource(floor1ClickedButtonName);
         
 	    carPlateURL 			= ParkingFrame.class.getResource(plateName);
 	    
