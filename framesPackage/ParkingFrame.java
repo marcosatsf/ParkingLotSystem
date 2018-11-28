@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -28,6 +29,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.text.MaskFormatter;
+
+import system.ParkingLot;
+import system.VehicleType;
 
 //ícone 20x20
 @SuppressWarnings("serial")
@@ -68,7 +72,12 @@ public class ParkingFrame extends JFrame{
     private static String bikeIconLogName 			= "motorcycleIconLog.png";
     private static String miniTruckIconLogName 		= "miniTruckIconLog.png";
     
+    private static String carIconName 				= "car.png";
+    private static String motorcycleIconName 		= "motorcycle.png";
+    private static String miniTruckIconName 		= "miniTruck.png";
     
+    private static String slotUpIconName			= "slotUp.png";
+    private static String slotDownIconName			= "slotDown.png";
     
     private static String plateName					= "placa.png";
     
@@ -104,6 +113,13 @@ public class ParkingFrame extends JFrame{
     private URL floor1HoveredButton;
     private URL floor1ClickedButton;
     
+    private URL carIconURL;
+    private URL bikeIconURL;
+    private URL miniTruckIconURL;
+    
+    private URL slotUpURL;
+    private URL slotDownURL;
+    
     private URL carPlateURL;
    
     
@@ -137,9 +153,13 @@ public class ParkingFrame extends JFrame{
     private JPanel logsEntryPanel;
     
     private Dictionary<String, URL> logImages;
+    
+    private List<JLabel> slots;
   
     private boolean floorTSelected = false;
     private boolean floor1Selected = false;
+    
+    private ParkingLot parkingLot = ParkingLot.getInstance();
 	
 	public ParkingFrame() {
 		
@@ -204,6 +224,8 @@ public class ParkingFrame extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 configButton.setIcon(new ImageIcon(configClickedButton));
+                
+                new ConfigurationFrame(ParkingFrame.this);
             }
         });
         
@@ -429,8 +451,6 @@ public class ParkingFrame extends JFrame{
 		
 		newEntryPanelLayout.putConstraint(SpringLayout.WEST, clearEntryButton, 20, SpringLayout.HORIZONTAL_CENTER, newEntryPanel);
 		newEntryPanelLayout.putConstraint(SpringLayout.SOUTH, clearEntryButton, -20, SpringLayout.SOUTH, newEntryPanel);
-		
-		
 		
 		
 		logNewEntryPanelLayout = new SpringLayout();
@@ -696,7 +716,65 @@ public class ParkingFrame extends JFrame{
 		centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.BLACK));
 		centerPanel.setBackground(Color.GRAY);
 		
-		JPanel mapPanel = new JPanel();
+		SpringLayout mapPanelLayout = new SpringLayout();
+		JPanel mapPanel = new JPanel(mapPanelLayout);
+		mapPanel.setBackground(darkGray);
+		mapPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
+		//mapPanel.setOpaque(false);
+		
+		
+		slots = new ArrayList<JLabel>();
+		
+		
+		for(int i = 0; i < 5;i++) {
+			SpringLayout slotContainerLayout = new SpringLayout();
+			JPanel slotContainer = new JPanel(slotContainerLayout);
+			slotContainer.setPreferredSize(new Dimension(373, 97));
+			slotContainer.setOpaque(true);
+			
+			for(int j = 0; j < 10;j++) {
+				JLabel slotUp = new JLabel(new ImageIcon(slotUpURL));
+				JLabel vehicleUP = new JLabel(new ImageIcon(miniTruckIconURL));
+				
+				
+				slotContainer.add(vehicleUP);
+				slotContainer.add(slotUp);
+				
+				slotContainerLayout.putConstraint(SpringLayout.SOUTH, slotUp, 0, SpringLayout.VERTICAL_CENTER, slotContainer);
+				slotContainerLayout.putConstraint(SpringLayout.WEST, slotUp, j * 37, SpringLayout.WEST, slotContainer);
+				
+				slotContainerLayout.putConstraint(SpringLayout.VERTICAL_CENTER, vehicleUP, 0, SpringLayout.VERTICAL_CENTER, slotUp);
+				slotContainerLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, vehicleUP, 0, SpringLayout.HORIZONTAL_CENTER, slotUp);
+				
+				slots.add(vehicleUP);
+			}
+			
+			for(int k = 0;k < 10;k++) {
+				JLabel slotDown = new JLabel(new ImageIcon(slotDownURL));
+				JLabel vehicleDown = new JLabel(new ImageIcon(carIconURL));
+				
+				slotContainer.add(vehicleDown);
+				slotContainer.add(slotDown);
+				
+				slotContainerLayout.putConstraint(SpringLayout.NORTH, slotDown, -2, SpringLayout.VERTICAL_CENTER, slotContainer);
+				slotContainerLayout.putConstraint(SpringLayout.WEST, slotDown, k * 37, SpringLayout.WEST, slotContainer);
+				
+				slotContainerLayout.putConstraint(SpringLayout.VERTICAL_CENTER, vehicleDown, 1, SpringLayout.VERTICAL_CENTER, slotDown);
+				slotContainerLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, vehicleDown, 0, SpringLayout.HORIZONTAL_CENTER, slotDown);
+				
+				slots.add(vehicleDown);
+			}
+			
+			
+			mapPanel.add(slotContainer);
+			mapPanelLayout.putConstraint(SpringLayout.NORTH, slotContainer, i * 115 + 20, SpringLayout.NORTH, mapPanel);
+			mapPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, slotContainer, 0, SpringLayout.HORIZONTAL_CENTER, mapPanel);
+		
+		}
+		
+		for(JLabel car : slots) {
+			car.setVisible(false);
+		}
 		
 		SpringLayout floorSelectionPanelLayout = new SpringLayout();
 		JPanel floorSelectionPanel = new JPanel(floorSelectionPanelLayout);	
@@ -737,6 +815,8 @@ public class ParkingFrame extends JFrame{
             	floorIndicatorLabel.setText("Piso T");
             	floorTSelected = true;
             	floor1Selected = false;
+            	
+            	setParkingSlots(0);
             }
         });
 		
@@ -759,6 +839,8 @@ public class ParkingFrame extends JFrame{
             	floorIndicatorLabel.setText("Piso 1");
             	floorTSelected = false;
             	floor1Selected = true;
+            	
+            	setParkingSlots(1);
             }
         });
 		
@@ -770,10 +852,10 @@ public class ParkingFrame extends JFrame{
 		floorSelectionPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, floorIndicatorLabel, 0, SpringLayout.HORIZONTAL_CENTER, floorSelectionPanel);
 		
 		floorSelectionPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, floorTButton, 0, SpringLayout.VERTICAL_CENTER, floorIndicatorLabel);
-		floorSelectionPanelLayout.putConstraint(SpringLayout.EAST, floorTButton, -160, SpringLayout.WEST, floorIndicatorLabel);
+		floorSelectionPanelLayout.putConstraint(SpringLayout.WEST, floorTButton, 50, SpringLayout.WEST, floorSelectionPanel);
 		
 		floorSelectionPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, floor1Button, 0, SpringLayout.VERTICAL_CENTER, floorIndicatorLabel);
-		floorSelectionPanelLayout.putConstraint(SpringLayout.WEST, floor1Button, 160, SpringLayout.EAST, floorIndicatorLabel);
+		floorSelectionPanelLayout.putConstraint(SpringLayout.EAST, floor1Button, -50, SpringLayout.EAST, floorSelectionPanel);
 		
 		centerPanelModifier.insets = new Insets(10,10,10,10);
 		
@@ -857,15 +939,6 @@ public class ParkingFrame extends JFrame{
         	
         });
         
-        configButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new ConfigurationFrame(ParkingFrame.this);
-			}
-        	
-        });
-        
         clearEntryButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -886,7 +959,47 @@ public class ParkingFrame extends JFrame{
         
         confirmEntryButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {			
+			public void actionPerformed(ActionEvent arg0) {	
+				
+				if(dateNewEntry.getText().equals("  /  /    ")) {
+					//Data Inválida
+					return;
+				}
+				
+				if(timeNewEntry.getText().equals("  :  ")) {
+					//Hora Inválida
+					return;
+				}
+				
+				if(carPlateNewEntry.getText().equals("   -    ")) {
+					//Placa Inválida
+					return;
+				}
+				
+				VehicleType type;
+				switch((String)vehicleTypeEntryComboBox.getSelectedItem()) {
+				
+				case "Carro":
+					type = VehicleType.CAR;
+					break;
+				case "Caminhonete":
+					type = VehicleType.MINITRUCK;
+					break;
+				case "Moto":
+					type = VehicleType.MOTORCYCLE;
+					break;
+				default:
+					type = VehicleType.CAR;
+					break;
+				
+				}
+			
+				
+				if(!parkingLot.addVehicle(type, dateNewEntry.getText(), timeNewEntry.getText(), carPlateNewEntry.getText())) {
+					//Não foi possível adicionar o veículo
+					return;
+				}
+				
 				int distance = 0, distanceInc = logsEntryPanel.getHeight()/3;
 				
 				logList.add(setNewVehicleLog((String)vehicleTypeEntryComboBox.getSelectedItem(), carPlateNewEntry.getText(), dateNewEntry.getText(), timeNewEntry.getText()));
@@ -925,6 +1038,10 @@ public class ParkingFrame extends JFrame{
 				
 				clearEntry();
 				
+				if(floorTSelected)
+					setParkingSlots(0);
+				if(floor1Selected)
+					setParkingSlots(1);
 			}
         	
         });
@@ -979,7 +1096,14 @@ public class ParkingFrame extends JFrame{
 	    
 	    carIconLogURL			= ParkingFrame.class.getResource(carIconLogName);
 	    bikeIconLogURL			= ParkingFrame.class.getResource(bikeIconLogName);
-	    miniTruckIconLogURL			= ParkingFrame.class.getResource(miniTruckIconLogName);
+	    miniTruckIconLogURL		= ParkingFrame.class.getResource(miniTruckIconLogName);
+	    
+	    carIconURL				= ParkingFrame.class.getResource(carIconName);
+	    bikeIconURL				= ParkingFrame.class.getResource(motorcycleIconName);
+	    miniTruckIconURL		= ParkingFrame.class.getResource(miniTruckIconName);
+	    
+	    slotUpURL				= ParkingFrame.class.getResource(slotUpIconName);
+	    slotDownURL				= ParkingFrame.class.getResource(slotDownIconName);
 	}
 	
 	private void clearEntry() {
@@ -994,7 +1118,45 @@ public class ParkingFrame extends JFrame{
 		carPlateNewExit.setText("");
 	}
 	
-	@SuppressWarnings("null")
+	
+	private void setParkingSlots(int floorToShow) {
+		List<VehicleType> slotsTypes = parkingLot.getSlotsVehicleType(floorToShow);
+		List<Boolean> slotsDisponibilities = parkingLot.getSlotsDisponibility(floorToShow);
+
+		
+		for(int i = 0; i < slots.size();i++) {
+			VehicleType type;
+			boolean disponibility;
+			
+			try {
+				type = slotsTypes.get(i);
+				
+				disponibility = slotsDisponibilities.get(i);
+			}catch(IndexOutOfBoundsException e) {
+				type = VehicleType.DEFAULT;
+				disponibility = true;
+			}
+			
+			switch(type) {
+			case CAR:
+				slots.get(i).setIcon(new ImageIcon(carIconURL));
+				break;
+			case MINITRUCK:
+				slots.get(i).setIcon(new ImageIcon(miniTruckIconURL));
+				break;
+			case MOTORCYCLE:
+				slots.get(i).setIcon(new ImageIcon(bikeIconURL));
+				break;
+			case DEFAULT:
+				break;
+			
+			}
+			
+			slots.get(i).setVisible(!disponibility);
+		}
+	}
+	
+
 	private JPanel setNewVehicleLog(String iconType, String carPlateSelected, String dateEntryLog, String timeEntryLog){		
 		SpringLayout newLogPanelLayout = new SpringLayout();
 		JPanel newLogPanel = new JPanel(newLogPanelLayout);
