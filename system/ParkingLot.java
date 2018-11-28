@@ -1,17 +1,18 @@
 package system;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ParkingLot {
 
 	private static ParkingLot instance = null;
-	private ArrayList<Floor> parkingLot;
+	private List<Floor> floors;
 	private Bank caixa;
 	
 	private ParkingLot() {
-		parkingLot = new ArrayList<Floor>();
-		parkingLot.add(new Floor(60,20,20));//Floor T
-		parkingLot.add(new Floor(100,0,0));//Floor 1
+		floors = new ArrayList<Floor>();
+		floors.add(new Floor(60,20,20));//Floor T
+		floors.add(new Floor(100,0,0));//Floor 1
 		
 		caixa = Bank.getInstance();
 	}
@@ -25,18 +26,45 @@ public class ParkingLot {
 		return caixa.getMultCar();
 	}
 	
-	public ArrayList<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots
-		ArrayList<Vehicle> vehicles = (ArrayList<Vehicle>) parkingLot.get(whichFloor).getSlots();
-		ArrayList<VehicleType> vTypes = new ArrayList<VehicleType>();
-		for(Vehicle each : vehicles){
-			vTypes.add(each.getType());
+	public boolean addVehicle(VehicleType type, String entryData, String entryTime, String vehiclePlate) {
+		
+		boolean output = false;
+		
+		Vehicle newVehicle = new Vehicle(vehiclePlate, type);
+		
+		for(Floor floor : floors) {
+			if(floor.addVehicle(newVehicle)) {
+				//Veículo adicionado
+				output = true;
+				break;
+			}else {
+				//Veículo não adicionado
+			}
+		}
+		
+		return output;
+	}
+	
+	public List<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots
+		List<Slot> slots =  floors.get(whichFloor).getSlots();
+		List<VehicleType> vTypes = new ArrayList<VehicleType>();
+		for(Slot slot : slots){
+			if(slot.getVehicle()!=null)
+				vTypes.add(slot.getVehicle().getType());
+			else vTypes.add(VehicleType.DEFAULT);
 		}
 		return vTypes;
 	}
 	
-	//public ArrayList<Boolean> getSlotsDisponibility(int whichFloor){
+	public List<Boolean> getSlotsDisponibility(int whichFloor){
+		List<Slot> slots =  floors.get(whichFloor).getSlots();
+		List<Boolean> isFreeSlot = new ArrayList<Boolean>();
+		for(Slot each : slots){
+			isFreeSlot.add(each.getDisponibility());
+		}
+		return isFreeSlot;
 		
-	//}
+	}
 	
 	public static ParkingLot getInstance(){
 		if(instance == null) instance = new ParkingLot();

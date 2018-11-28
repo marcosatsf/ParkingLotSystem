@@ -66,12 +66,8 @@ public class Floor {
 		
 	}
 	
-	public List<Vehicle> getSlots(){
-		List<Vehicle> vehicles = new ArrayList<Vehicle>();
-		for(Slot slot : slots) {
-			vehicles.add(slot.getVehicle());
-		}
-		return vehicles;
+	public List<Slot> getSlots(){
+		return slots;
 	}
 	
 	

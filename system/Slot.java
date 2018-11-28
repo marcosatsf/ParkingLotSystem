@@ -30,14 +30,18 @@ public class Slot {
 	
 	public void removeVehicle() {
 		
-		if (vehicle!= null) {
-			vehicle = null;
-			disponibility = true;
-		}
+		if (vehicle!= null) 
+			vehicle = null;	
+		
+		disponibility = true;
 	}
 	
 	public Vehicle getVehicle() {
 		return vehicle;
+	}
+	
+	public boolean getDisponibility() {
+		return disponibility;
 	}
 
 }

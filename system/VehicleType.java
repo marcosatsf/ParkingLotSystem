@@ -1,5 +1,5 @@
 package system;
 
 public enum VehicleType {
-	CAR, MOTORCYCLE, MINITRUCK
+	CAR, MOTORCYCLE, MINITRUCK, DEFAULT
 }
