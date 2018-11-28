@@ -79,6 +79,9 @@ public class ParkingFrame extends JFrame{
     private static String slotUpIconName			= "slotUp.png";
     private static String slotDownIconName			= "slotDown.png";
     
+    private static String imageParkingLot			= "imageParkingLot.png";
+    private static String iconParkingLot			= "iconImageParkingLot.png";
+    
     private static String plateName					= "placa.png";
     
     private URL carIconLogURL;
@@ -119,6 +122,9 @@ public class ParkingFrame extends JFrame{
     
     private URL slotUpURL;
     private URL slotDownURL;
+    
+    private URL imageParkingLotURL;
+    private URL iconParkingLotURL;
     
     private URL carPlateURL;
    
@@ -270,12 +276,31 @@ public class ParkingFrame extends JFrame{
             	closeButton.setIcon(new ImageIcon(closeClickedButton));
             }
         });
-
         
+        JLabel iconParkingLotLabel = new JLabel(new ImageIcon(iconParkingLotURL));
+        JLabel parkingLabel = new JLabel("Estacionamento");
+        JLabel lotLabel = new JLabel("GUTOMA");
+        parkingLabel.setFont(defaultFont.deriveFont(Font.BOLD, 22));
+        lotLabel.setFont(defaultFont.deriveFont(Font.BOLD, 22));
+        iconParkingLotLabel.setVisible(false);
+        parkingLabel.setVisible(false);
+        lotLabel.setVisible(false);
+
+        menuPanel.add(iconParkingLotLabel);
+        menuPanel.add(parkingLabel);
+        menuPanel.add(lotLabel);
         menuPanel.add(configButton);
         menuPanel.add(bankButton);
         menuPanel.add(closeButton);
 
+        menuPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, iconParkingLotLabel, 0, SpringLayout.HORIZONTAL_CENTER, menuPanel);
+        menuPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, iconParkingLotLabel, 0, SpringLayout.VERTICAL_CENTER, menuPanel);
+
+        menuPanelLayout.putConstraint(SpringLayout.EAST, parkingLabel, -10, SpringLayout.WEST, iconParkingLotLabel);
+        menuPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, parkingLabel, 0, SpringLayout.VERTICAL_CENTER, menuPanel);
+        
+        menuPanelLayout.putConstraint(SpringLayout.WEST, lotLabel, 10, SpringLayout.EAST, iconParkingLotLabel);
+        menuPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, lotLabel, 0, SpringLayout.VERTICAL_CENTER, menuPanel);
 
         menuPanelLayout.putConstraint(SpringLayout.WEST, configButton, 5, SpringLayout.WEST, menuPanel);
         menuPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, configButton, 0, SpringLayout.VERTICAL_CENTER, menuPanel);
@@ -716,12 +741,17 @@ public class ParkingFrame extends JFrame{
 		centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.BLACK));
 		centerPanel.setBackground(Color.GRAY);
 		
+		SpringLayout mapPanelForParkingLotLayout = new SpringLayout();
+		JPanel mapPanelForParkingLot = new JPanel(mapPanelForParkingLotLayout);
+		mapPanelForParkingLot.setOpaque(false);
+		
 		SpringLayout mapPanelLayout = new SpringLayout();
 		JPanel mapPanel = new JPanel(mapPanelLayout);
 		mapPanel.setBackground(darkGray);
 		mapPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 		//mapPanel.setOpaque(false);
 		
+		JLabel imageParkingLotLabel = new JLabel(new ImageIcon(imageParkingLotURL));
 		
 		slots = new ArrayList<JLabel>();
 		
@@ -765,7 +795,6 @@ public class ParkingFrame extends JFrame{
 				slots.add(vehicleDown);
 			}
 			
-			
 			mapPanel.add(slotContainer);
 			mapPanelLayout.putConstraint(SpringLayout.NORTH, slotContainer, i * 115 + 20, SpringLayout.NORTH, mapPanel);
 			mapPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, slotContainer, 0, SpringLayout.HORIZONTAL_CENTER, mapPanel);
@@ -775,6 +804,19 @@ public class ParkingFrame extends JFrame{
 		for(JLabel car : slots) {
 			car.setVisible(false);
 		}
+		
+		mapPanelForParkingLot.add(imageParkingLotLabel);
+		mapPanelForParkingLot.add(mapPanel);
+		
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.VERTICAL_CENTER, imageParkingLotLabel, 0, SpringLayout.VERTICAL_CENTER, mapPanelForParkingLot);
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, imageParkingLotLabel, 0, SpringLayout.HORIZONTAL_CENTER, mapPanelForParkingLot);
+		
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.NORTH, mapPanel, 0, SpringLayout.NORTH, mapPanelForParkingLot);
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.SOUTH, mapPanel, 0, SpringLayout.SOUTH, mapPanelForParkingLot);
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.EAST, mapPanel, 0, SpringLayout.EAST, mapPanelForParkingLot);
+		mapPanelForParkingLotLayout.putConstraint(SpringLayout.WEST, mapPanel, 0, SpringLayout.WEST, mapPanelForParkingLot);
+		
+		mapPanel.setVisible(false);		
 		
 		SpringLayout floorSelectionPanelLayout = new SpringLayout();
 		JPanel floorSelectionPanel = new JPanel(floorSelectionPanelLayout);	
@@ -815,7 +857,11 @@ public class ParkingFrame extends JFrame{
             	floorIndicatorLabel.setText("Piso T");
             	floorTSelected = true;
             	floor1Selected = false;
-            	
+            	if(imageParkingLotLabel.isVisible()) imageParkingLotLabel.setVisible(false);
+        		iconParkingLotLabel.setVisible(true);
+                parkingLabel.setVisible(true);
+                lotLabel.setVisible(true);
+            	mapPanel.setVisible(true);	
             	setParkingSlots(0);
             }
         });
@@ -839,7 +885,11 @@ public class ParkingFrame extends JFrame{
             	floorIndicatorLabel.setText("Piso 1");
             	floorTSelected = false;
             	floor1Selected = true;
-            	
+            	if(imageParkingLotLabel.isVisible()) imageParkingLotLabel.setVisible(false);
+        		iconParkingLotLabel.setVisible(true);
+                parkingLabel.setVisible(true);
+                lotLabel.setVisible(true);
+            	mapPanel.setVisible(true);	
             	setParkingSlots(1);
             }
         });
@@ -864,7 +914,7 @@ public class ParkingFrame extends JFrame{
 		centerPanelModifier.fill = GridBagConstraints.BOTH;
 		centerPanelModifier.weighty = 1;
 		centerPanelModifier.weightx = 1;
-		centerPanel.add(mapPanel, centerPanelModifier);
+		centerPanel.add(mapPanelForParkingLot, centerPanelModifier);
 		
 		centerPanelModifier.insets = new Insets(0,10,10,10);
 		
@@ -920,6 +970,7 @@ public class ParkingFrame extends JFrame{
         
         
       //---------------------------------------------------------------------------------------------------------------------------------------Listeners
+
         
         closeButton.addActionListener(new ActionListener() {
 
@@ -1104,6 +1155,9 @@ public class ParkingFrame extends JFrame{
 	    
 	    slotUpURL				= ParkingFrame.class.getResource(slotUpIconName);
 	    slotDownURL				= ParkingFrame.class.getResource(slotDownIconName);
+	    
+	    imageParkingLotURL		= ParkingFrame.class.getResource(imageParkingLot);
+	    iconParkingLotURL		= ParkingFrame.class.getResource(iconParkingLot);
 	}
 	
 	private void clearEntry() {
@@ -1121,8 +1175,7 @@ public class ParkingFrame extends JFrame{
 	
 	private void setParkingSlots(int floorToShow) {
 		List<VehicleType> slotsTypes = parkingLot.getSlotsVehicleType(floorToShow);
-		List<Boolean> slotsDisponibilities = parkingLot.getSlotsDisponibility(floorToShow);
-
+		List<Boolean> slotsDisponibilities = parkingLot.getSlotsDisponibility(floorToShow);		
 		
 		for(int i = 0; i < slots.size();i++) {
 			VehicleType type;
