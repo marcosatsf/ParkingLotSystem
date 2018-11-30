@@ -1,48 +1,156 @@
 package system;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 public class ParkingLot {
 
 	private static ParkingLot instance = null;
 	private List<Floor> floors;
-	private Bank caixa;
+	private Bank bank;
+	
+	private Dictionary<String,LocalDateTime> vehicleEntryDay = new Hashtable<String, LocalDateTime>();
+	private Dictionary<LocalDateTime,List<String>> vehicleOutByDay = new Hashtable<LocalDateTime, List<String>>();//carros pagos naquele dia
 	
 	private ParkingLot() {
 		floors = new ArrayList<Floor>();
 		floors.add(new Floor(60,20,20));//Floor T
 		floors.add(new Floor(100,0,0));//Floor 1
 		
-		caixa = Bank.getInstance();
+		bank = new Bank();
+	}
+	
+	public static ParkingLot getInstance(){
+		if(instance == null) instance = new ParkingLot();
+		return instance;
 	}
 	
 	public void setMultipliers(float carMult, float motorcycleMult, float miniTruckMult){
-		caixa.setMultipliers(carMult, motorcycleMult, miniTruckMult);
+		bank.setMultipliers(carMult, motorcycleMult, miniTruckMult);
 	}
 	
 	public float getMultCar()
 	{
-		return caixa.getMultCar();
+		return bank.getMultCar();
 	}
 	
-	public boolean addVehicle(VehicleType type, String entryData, String entryTime, String vehiclePlate) {
+	public void addVehicle(VehicleType type, String entryDateString, String entryTimeString, String vehiclePlate) 
+			throws VehicleAlreadyExistsException, OutOfSpaceException, DateTimeException 
+	{
 		
 		boolean output = false;
 		
 		Vehicle newVehicle = new Vehicle(vehiclePlate, type);
 		
 		for(Floor floor : floors) {
+			
+			if(floor.checkVehicleExistence(vehiclePlate))
+				throw new VehicleAlreadyExistsException();
+			
+			String[] datePieces = entryDateString.split("/");
+			String[] timePieces = entryTimeString.split(":");
+			int year, monthNumb,day, hour, minute;
+			Month month;
+			
+			year = Integer.parseInt(datePieces[2]);
+			monthNumb = Integer.parseInt(datePieces[1]);
+			month = Month.of(monthNumb);
+			day = Integer.parseInt(datePieces[0]);
+			hour = Integer.parseInt(timePieces[0]);
+			minute = Integer.parseInt(timePieces[1]);
+			
+			
+			LocalDateTime entryDate;
+			try {
+				entryDate = LocalDateTime.of(year, month, day, hour, minute);
+			}catch(DateTimeException dateException) {
+				throw dateException;
+			}
+			
 			if(floor.addVehicle(newVehicle)) {
 				//Veículo adicionado
 				output = true;
+				
+				addVehicleEntryDay(vehiclePlate, entryDate);
+				
 				break;
-			}else {
-				//Veículo não adicionado
 			}
 		}
 		
-		return output;
+		if(!output) 
+			throw new OutOfSpaceException();
+		
+	}
+	
+	public float removeVehicle(String vehiclePlate, String exitDateString, String exitTimeString) 
+	throws BreakingTimeException, DateTimeException, VehicleNotFoundException
+	{
+		
+		float value = 0;
+		
+		boolean found = false;
+		
+		for(Floor floor : floors) {
+			if(floor.checkVehicleExistence(vehiclePlate)) {
+				
+				found = true;
+				
+				String[] datePieces = exitDateString.split("/");
+				String[] timePieces = exitTimeString.split(":");
+				
+				int year = Integer.parseInt(datePieces[2]);
+				int monthNumb = Integer.parseInt(datePieces[1]);
+				Month month = Month.of(monthNumb);
+				int day = Integer.parseInt(datePieces[0]);
+				int hour = Integer.parseInt(timePieces[0]);
+				int minute = Integer.parseInt(timePieces[1]);
+				
+				
+				LocalDateTime exitDate;
+				try {
+					exitDate = LocalDateTime.of(year, month, day, hour, minute);
+				}catch(DateTimeException dateException) {
+					throw dateException;
+				}
+				
+				LocalDateTime entryDate = getVehicleEntryDate(vehiclePlate);
+				
+				if(!entryDate.isBefore(exitDate)) {
+					throw new BreakingTimeException();
+				}
+				
+				VehicleType type = floor.getVehicleType(vehiclePlate);
+				
+				addVehicleOutByDay(exitDate, vehiclePlate);
+		
+				value = bank.calculatePrice(entryDate, exitDate, type);
+
+				bank.addPlateToValue(exitDate, value);
+				
+				floor.removeVehicle(vehiclePlate);
+				
+			}
+		}
+		
+		if(!found) throw new VehicleNotFoundException();
+			
+		
+		return value;
+	}
+	
+	public int getQuantity(LocalDateTime initialDate, LocalDateTime finalDate)
+	{
+		int counter =0;
+		while(initialDate.getDayOfMonth() != finalDate.getDayOfMonth()){
+			counter += vehicleOutByDay.get(initialDate).size();
+			initialDate.plusDays(1);
+		}
+		return counter;
 	}
 	
 	public List<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots
@@ -65,9 +173,25 @@ public class ParkingLot {
 		return isFreeSlot;
 		
 	}
+
+	public void addVehicleEntryDay(String k, LocalDateTime v) {
+		vehicleEntryDay.put(k, v);
+	}
 	
-	public static ParkingLot getInstance(){
-		if(instance == null) instance = new ParkingLot();
-		return instance;
+	public void addVehicleOutByDay(LocalDateTime k, String v){
+		List<String> list = vehicleOutByDay.get(k);
+		
+		if(list != null) {
+			list.add(v);
+		}else {
+			list = new ArrayList<String>();
+			list.add(v);
+		}
+		
+		vehicleOutByDay.put(k, list);
+	}
+	
+	public LocalDateTime getVehicleEntryDate(String vehiclePlate) {
+		return vehicleEntryDay.get(vehiclePlate);
 	}
 }

@@ -49,25 +49,54 @@ public class Floor {
 				}
 			}
 			break;
+		case DEFAULT:
+			//Do nothing
+			break;
+		default:
+			//Do nothing
+			break;
 		}
 		
 		return output;
 		
 	}
 	
-	public void removeVehicle(Vehicle vehicle) {
+	public void removeVehicle(String plate) {
 		
 		for(Slot slot : slots) {
-			if(slot.getVehicle().getPlate().equals(vehicle.getPlate())) {
-				slot.removeVehicle();
-				break;
-			}
+			if(slot.getVehicle() != null)
+				if(slot.getVehicle().getPlate().equals(plate)) {
+					slot.removeVehicle();
+					break;
+				}
 		}
+		
+	}
+	
+	public boolean checkVehicleExistence(String plate) {
+		
+		for(Slot slot : slots) {
+			if(slot.getVehicle()!= null)
+				if(slot.getVehicle().getPlate().equals(plate))
+					return true;
+		}
+		
+		return false;
 		
 	}
 	
 	public List<Slot> getSlots(){
 		return slots;
+	}
+	
+	public VehicleType getVehicleType(String plate) {
+		for(Slot slot : slots) {
+			if(slot.getVehicle()!= null)
+				if(slot.getVehicle().getPlate().equals(plate))
+					return slot.getVehicleType();
+		}
+		
+		return VehicleType.DEFAULT;
 	}
 	
 	

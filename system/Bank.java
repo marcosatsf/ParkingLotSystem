@@ -1,6 +1,7 @@
 package system;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -8,32 +9,31 @@ import java.util.List;
 
 public class Bank {
 
-	private static Bank instance = null;
 	private float carMult, motorcycleMult, miniTruckMult;
-	private Dictionary<LocalDateTime,List<String>> vehicleOutByDay;//carros pagos naquele dia
-	private Dictionary<LocalDateTime,List<String>> vehicleEntryByDay;//carros pagos naquele dia
-	//private Dictionary<String,LocalDateTime> x;
-	private Dictionary<String,LocalDateTime> vehicleEntryDay;
+	
 	private Dictionary<LocalDateTime,List<Float>> plateToValue;//valores pagos naquele dia
 	
-	
-	private Bank(){
-		this(10,5,15);
+	public Bank(){
+		this(10,5,15); //Multiplicadores Iniciais
 	}
 	
 	private Bank(float carMult,float motorcycleMult, float miniTruckMult){
-		vehicleOutByDay = new Hashtable<LocalDateTime,List<String>>();
-		vehicleEntryByDay = new Hashtable<LocalDateTime,List<String>>();
-		vehicleEntryDay = new Hashtable<String,LocalDateTime>();
 		plateToValue = new Hashtable<LocalDateTime,List<Float>>();
 		this.carMult = carMult;
 		this.motorcycleMult = motorcycleMult;
 		this.miniTruckMult = miniTruckMult;
 	}
-
-	public static Bank getInstance(){
-		if(instance == null) instance = new Bank();
-		return instance;
+	
+	
+	public void addPlateToValue(LocalDateTime exitDate, float value) {
+		List<Float> list = plateToValue.get(exitDate);
+		if(list != null) {
+			list.add(value);
+		}else {
+			list = new ArrayList<Float>();
+			list.add(value);
+		}
+		plateToValue.put(exitDate, list);
 	}
 	
 	public void setMultipliers(float carMult, float motorcycleMult, float miniTruckMult){
@@ -55,66 +55,35 @@ public class Bank {
 		return miniTruckMult;
 	}
 	
-	public void addVehicleOutByDay(LocalDateTime k, String v, float value){
-		List<String> addNewVehicle = new ArrayList<String>();
-		List<Float> addNewValue = new ArrayList<Float>();
-		if(vehicleOutByDay.isEmpty()){
-			addNewVehicle.add(v);
-			vehicleOutByDay.put(k, addNewVehicle);
-			addNewValue.add(value);
-			plateToValue.put(k, addNewValue);
-		}
-		else{
-			if(vehicleOutByDay.get(k) != null){
-				addNewVehicle = vehicleOutByDay.get(k);
-				addNewVehicle.add(v);
-				addNewValue = plateToValue.get(k);
-				addNewValue.add(value);
-				vehicleOutByDay.remove(k);
-				plateToValue.remove(k);
-				vehicleOutByDay.put(k, addNewVehicle);
-				plateToValue.put(k, addNewValue);
-			}
-			else{
-				addNewVehicle.add(v);
-				addNewValue.add(value);
-				vehicleOutByDay.put(k, addNewVehicle);
-				plateToValue.put(k, addNewValue);
-			}
-		}
-	}
-	
-	public void addVehicleEntryByDay(LocalDateTime k, String v, float value){
-		List<String> addNewVehicle = new ArrayList<String>();
-		List<Float> addNewValue = new ArrayList<Float>();
-		if(vehicleOutByDay.isEmpty()){
-			addNewVehicle.add(v);
-			vehicleOutByDay.put(k, addNewVehicle);
-			addNewValue.add(value);
-			plateToValue.put(k, addNewValue);
-		}
-		else{
-			if(vehicleOutByDay.get(k) != null){
-				addNewVehicle = vehicleOutByDay.get(k);
-				addNewVehicle.add(v);
-				addNewValue = plateToValue.get(k);
-				addNewValue.add(value);
-				vehicleOutByDay.remove(k);
-				plateToValue.remove(k);
-				vehicleOutByDay.put(k, addNewVehicle);
-				plateToValue.put(k, addNewValue);
-			}
-			else{
-				addNewVehicle.add(v);
-				addNewValue.add(value);
-				vehicleOutByDay.put(k, addNewVehicle);
-				plateToValue.put(k, addNewValue);
-			}
-		}
-	}
-	
-	public void addVehicleEntryDay(String k, LocalDateTime v) {
-		vehicleEntryDay.put(k, v);
+	public float calculatePrice(LocalDateTime entryDate, LocalDateTime exitDate, VehicleType type) {
+		
+		float value = 1;
+				
+        long hoursDiff = ChronoUnit.HOURS.between(entryDate, exitDate);
+        
+        switch(type) {
+		case CAR:
+			value = carMult;
+			break;
+		case MINITRUCK:
+			value = miniTruckMult;
+			break;
+		case MOTORCYCLE:
+			value = motorcycleMult;
+			break;
+		case DEFAULT:
+			break;
+		default:
+			break;
+        
+        }
+        
+        if(hoursDiff > 0) {
+        	value += (value/2) * (hoursDiff);
+        }
+        
+		
+		return value;
 	}
 	
 	public float getPriceByDay(LocalDateTime whichDay){
@@ -128,20 +97,15 @@ public class Bank {
 	public float getPrice(LocalDateTime initialDate, LocalDateTime finalDate)
 	{
 		float counter =0;
+		
+
 		while(initialDate.getDayOfMonth() != finalDate.getDayOfMonth()){
 			counter += getPriceByDay(initialDate);
 			initialDate.plusDays(1);
 		}
+		
 		return counter;
 	}
 	
-	public int getQuantity(LocalDateTime initialDate, LocalDateTime finalDate)
-	{
-		int counter =0;
-		while(initialDate.getDayOfMonth() != finalDate.getDayOfMonth()){
-			counter += vehicleOutByDay.get(initialDate).size();
-			initialDate.plusDays(1);
-		}
-		return counter;
-	}
+	
 }

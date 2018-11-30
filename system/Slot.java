@@ -40,6 +40,10 @@ public class Slot {
 		return vehicle;
 	}
 	
+	public VehicleType getVehicleType() {
+		return vehicle.getType();
+	}
+	
 	public boolean getDisponibility() {
 		return disponibility;
 	}

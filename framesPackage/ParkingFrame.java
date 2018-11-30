@@ -13,6 +13,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -30,7 +32,11 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.text.MaskFormatter;
 
+import system.BreakingTimeException;
+import system.OutOfSpaceException;
 import system.ParkingLot;
+import system.VehicleAlreadyExistsException;
+import system.VehicleNotFoundException;
 import system.VehicleType;
 
 //ícone 20x20
@@ -134,8 +140,9 @@ public class ParkingFrame extends JFrame{
     private final Color carPlateColor 	= new Color(49,49,49);
     
     
-	public static Font defaultFont	= new Font("Trebuchet MS", Font.BOLD, 22);
-	public static Font carPlateFont	= new Font("Unispace", Font.BOLD, 40);
+	private static Font defaultFont		= new Font("Trebuchet MS", Font.BOLD, 22);
+	private static Font carPlateFont	= new Font("Unispace", Font.BOLD, 40);
+	private static Font receiptFont		= new Font("Courier New", Font.BOLD, 15);
 	
 	
 	private JFormattedTextField carPlateNewEntry;
@@ -166,6 +173,13 @@ public class ParkingFrame extends JFrame{
     private boolean floor1Selected = false;
     
     private ParkingLot parkingLot = ParkingLot.getInstance();
+
+
+	private SpringLayout receiptPanelLayout;
+	private JPanel receiptPanel;
+
+
+	
 	
 	public ParkingFrame() {
 		
@@ -639,8 +653,6 @@ public class ParkingFrame extends JFrame{
 		
 			
 		newExitPanel.add(newExitLabelPanel);
-		newExitPanel.add(vehicleTypeExitComboBox);
-		newExitPanel.add(vehicleTypeExitLabel);
 		newExitPanel.add(dateNewExitLabel);
 		newExitPanel.add(dateNewExit);
 		newExitPanel.add(timeNewExitLabel);
@@ -655,23 +667,16 @@ public class ParkingFrame extends JFrame{
 		newExitPanelLayout.putConstraint(SpringLayout.EAST, newExitLabelPanel, 2, SpringLayout.EAST, newExitPanel);
 		newExitPanelLayout.putConstraint(SpringLayout.NORTH, newExitLabelPanel, -2, SpringLayout.NORTH,newExitPanel);
 		
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, vehicleTypeExitLabel, 15, SpringLayout.SOUTH, newExitLabelPanel);
-		newExitPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeExitLabel, 20, SpringLayout.WEST,newExitPanel);
-		
-		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, vehicleTypeExitComboBox, 0, SpringLayout.VERTICAL_CENTER, vehicleTypeExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.WEST, vehicleTypeExitComboBox, 5, SpringLayout.EAST,vehicleTypeExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.EAST, vehicleTypeExitComboBox, -40, SpringLayout.EAST,newExitPanel);
-		
-		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExitLabel, 0, SpringLayout.WEST,vehicleTypeExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExitLabel, 10, SpringLayout.SOUTH, vehicleTypeExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExitLabel, 15, SpringLayout.WEST,newExitPanel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExitLabel, 25, SpringLayout.SOUTH, newExitLabelPanel);
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, dateNewExit, 5, SpringLayout.EAST,dateNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, dateNewExit, 0, SpringLayout.VERTICAL_CENTER, dateNewExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.EAST, dateNewExit, 0, SpringLayout.EAST,vehicleTypeExitComboBox);
+		newExitPanelLayout.putConstraint(SpringLayout.EAST, dateNewExit, -40, SpringLayout.EAST,newExitPanel);
 		newExitPanelLayout.putConstraint(SpringLayout.NORTH, dateNewExit, 0, SpringLayout.NORTH,dateNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.SOUTH, dateNewExit, 0, SpringLayout.SOUTH,dateNewExitLabel);
 		
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExitLabel, 0, SpringLayout.WEST,dateNewExitLabel);
-		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExitLabel, 10, SpringLayout.SOUTH, dateNewExitLabel);
+		newExitPanelLayout.putConstraint(SpringLayout.NORTH, timeNewExitLabel, 25, SpringLayout.SOUTH, dateNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.WEST, timeNewExit, 0, SpringLayout.WEST,dateNewExit);
 		newExitPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, timeNewExit, 0, SpringLayout.VERTICAL_CENTER, timeNewExitLabel);
 		newExitPanelLayout.putConstraint(SpringLayout.EAST, timeNewExit, 0, SpringLayout.EAST,dateNewExit);
@@ -695,27 +700,28 @@ public class ParkingFrame extends JFrame{
 		
 		
 		
-		SpringLayout receiptPanelLayout = new SpringLayout();
-		JPanel receiptPanel = new JPanel(receiptPanelLayout);
-		receiptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
-		receiptPanel.setBackground(Color.darkGray);
 		
-		JPanel receiptLabelPanel = new JPanel();	
-		receiptLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
-		receiptLabelPanel.setBackground(orange);
-		
-		JLabel receiptLabel = new JLabel("Recibo");
-		receiptLabel.setForeground(Color.BLACK);
-		receiptLabel.setFont(defaultFont);
-		
-		receiptLabelPanel.add(receiptLabel);
-		
-		receiptPanel.add(receiptLabelPanel);
-		
-		
-		receiptPanelLayout.putConstraint(SpringLayout.WEST, receiptLabelPanel, -2, SpringLayout.WEST, receiptPanel);
-		receiptPanelLayout.putConstraint(SpringLayout.EAST, receiptLabelPanel, 2, SpringLayout.EAST, receiptPanel);
-		receiptPanelLayout.putConstraint(SpringLayout.NORTH, receiptLabelPanel, -2, SpringLayout.NORTH,receiptPanel);
+		receiptPanelLayout = new SpringLayout();
+        receiptPanel = new JPanel(receiptPanelLayout);
+        receiptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+        receiptPanel.setBackground(Color.darkGray);
+
+        JPanel receiptLabelPanel = new JPanel();
+        receiptLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
+        receiptLabelPanel.setBackground(orange);
+
+        JLabel receiptLabel = new JLabel("Recibo");
+        receiptLabel.setForeground(Color.BLACK);
+        receiptLabel.setFont(defaultFont);
+
+        receiptLabelPanel.add(receiptLabel);
+
+        receiptPanel.add(receiptLabelPanel);
+
+
+        receiptPanelLayout.putConstraint(SpringLayout.WEST, receiptLabelPanel, -2, SpringLayout.WEST, receiptPanel);
+        receiptPanelLayout.putConstraint(SpringLayout.EAST, receiptLabelPanel, 2, SpringLayout.EAST, receiptPanel);
+        receiptPanelLayout.putConstraint(SpringLayout.NORTH, receiptLabelPanel, -2, SpringLayout.NORTH,receiptPanel);
 		
 		
 		
@@ -854,7 +860,7 @@ public class ParkingFrame extends JFrame{
             public void mouseClicked(MouseEvent e) {
             	floorTButton.setIcon(new ImageIcon(floor0ClickedButton));
             	floor1Button.setIcon(new ImageIcon(floor1NormalButton));
-            	floorIndicatorLabel.setText("Piso T");
+            	floorIndicatorLabel.setText("Térreo");
             	floorTSelected = true;
             	floor1Selected = false;
             	if(imageParkingLotLabel.isVisible()) imageParkingLotLabel.setVisible(false);
@@ -1014,16 +1020,19 @@ public class ParkingFrame extends JFrame{
 				
 				if(dateNewEntry.getText().equals("  /  /    ")) {
 					//Data Inválida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(timeNewEntry.getText().equals("  :  ")) {
 					//Hora Inválida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(carPlateNewEntry.getText().equals("   -    ")) {
 					//Placa Inválida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
@@ -1045,11 +1054,25 @@ public class ParkingFrame extends JFrame{
 				
 				}
 			
-				
-				if(!parkingLot.addVehicle(type, dateNewEntry.getText(), timeNewEntry.getText(), carPlateNewEntry.getText())) {
-					//Não foi possível adicionar o veículo
+				try {
+					
+					parkingLot.addVehicle(type, dateNewEntry.getText(), timeNewEntry.getText(), carPlateNewEntry.getText());
+					
+				}catch(VehicleAlreadyExistsException exists) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, exists.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}catch(OutOfSpaceException outOfspace) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, outOfspace.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}catch(DateTimeException dateException) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+
+				if(floorTSelected)
+					setParkingSlots(0);
+				if(floor1Selected)
+					setParkingSlots(1);
 				
 				int distance = 0, distanceInc = logsEntryPanel.getHeight()/3;
 				
@@ -1088,29 +1111,73 @@ public class ParkingFrame extends JFrame{
 				repaint();
 				
 				clearEntry();
+			}
+        	
+        });
+
+        confirmExitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				
+				if(dateNewExit.getText().equals("  /  /    ")) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				if(timeNewExit.getText().equals("  :  ")) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				if(carPlateNewExit.getText().equals("   -    ")) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				float value = 0;
+				
+				try {
+					value = parkingLot.removeVehicle(carPlateNewExit.getText(), dateNewExit.getText(), timeNewExit.getText());
+				}
+				catch(BreakingTimeException breakingTieme) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, breakingTieme.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				catch(DateTimeException dateException) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				catch(VehicleNotFoundException notFound) {
+					JOptionPane.showMessageDialog(ParkingFrame.this, notFound.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
 				
 				if(floorTSelected)
 					setParkingSlots(0);
 				if(floor1Selected)
 					setParkingSlots(1);
+
+				LocalDateTime entryDate = parkingLot.getVehicleEntryDate(carPlateNewExit.getText());
+				
+				
+				String entryDateString = Integer.toString(entryDate.getDayOfMonth()) + "/" + Integer.toString(entryDate.getMonthValue()) + "/" + Integer.toString(entryDate.getYear());
+				String entryTimeString = Integer.toString(entryDate.getHour()) + ":" + Integer.toString(entryDate.getMinute());
+				
+				JPanel receipt = setReceipt(carPlateNewExit.getText(), entryDateString, entryTimeString, dateNewExit.getText(), timeNewExit.getText(), value);
+                receiptPanel.add(receipt);
+
+                receiptPanelLayout.putConstraint(SpringLayout.EAST, receipt, 0, SpringLayout.EAST, receiptPanel);
+                receiptPanelLayout.putConstraint(SpringLayout.WEST, receipt, 0, SpringLayout.WEST, receiptPanel);
+                receiptPanelLayout.putConstraint(SpringLayout.SOUTH, receipt, 0, SpringLayout.SOUTH, receiptPanel);
+                receiptPanelLayout.putConstraint(SpringLayout.NORTH, receipt, 0, SpringLayout.SOUTH, receiptLabelPanel);
+
+                revalidate();
+                repaint();
+				
+				clearExit();
 			}
         	
         });
-        
-//        Timer tm = new Timer(3000,new ActionListener(){
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            	
-//        		icon = new ImageIcon(listImg[whichImg]);
-//        		imagem.setIcon(icon);
-//        		repaint();
-//            	revalidate();
-//            	if(whichImg >= listImg.length-1) whichImg = 0;
-//            	else whichImg++;
-//            }
-//        });
-//		//tm.setInitialDelay(1000);
-//		tm.start();
        
 	}
 	
@@ -1265,5 +1332,88 @@ public class ParkingFrame extends JFrame{
 		
 		return newLogPanel;
 	}
+	
+	private JPanel setReceipt(String carPlateSelected, String dateEntry, String timeEntry, String dateOut, String timeOut, float value){
+        SpringLayout receiptPanelLayout = new SpringLayout();
+        JPanel receiptPanel = new JPanel(receiptPanelLayout);
+        receiptPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        receiptPanel.setBackground(new Color(255, 255, 204));
+        //newLogPanel.setOpaque(false);
+        //newLogPanel.setPreferredSize(new Dimension(100, 30));
+
+        JLabel lines = new JLabel("-----------------------------");
+        lines.setFont(receiptFont);
+        lines.setForeground(Color.BLACK);
+
+        JLabel dateEntryLog = new JLabel("Data de entrada: " + dateEntry);
+        dateEntryLog.setFont(receiptFont);
+        dateEntryLog.setForeground(Color.BLACK);
+
+        JLabel timeEntryLog = new JLabel("Horário de entrada: " + timeEntry);
+        timeEntryLog.setFont(receiptFont);
+        timeEntryLog.setForeground(Color.BLACK);
+
+        JLabel carPlateLogName = new JLabel("Placa: " + carPlateSelected);
+        carPlateLogName.setFont(receiptFont);
+        carPlateLogName.setForeground(Color.BLACK);
+
+        JLabel dateOutLog = new JLabel("Data de saída: " + dateOut);
+        dateOutLog.setFont(receiptFont);
+        dateOutLog.setForeground(Color.BLACK);
+        
+        JLabel timeOutLog = new JLabel("Horário de saída: " + timeOut);
+        timeOutLog.setFont(receiptFont);
+        timeOutLog.setForeground(Color.BLACK);
+
+        JLabel receiptValue = new JLabel("Preço a pagar: R$ " + value);
+        receiptValue.setFont(receiptFont);
+        receiptValue.setForeground(Color.BLACK);
+
+        JLabel lines2 = new JLabel("-----------------------------");
+        lines2.setFont(receiptFont);
+        lines2.setForeground(Color.BLACK);
+
+        receiptPanel.add(lines);
+        receiptPanel.add(dateEntryLog);
+        receiptPanel.add(timeEntryLog);
+        receiptPanel.add(carPlateLogName);
+        receiptPanel.add(dateOutLog);
+        receiptPanel.add(timeOutLog);
+        receiptPanel.add(receiptValue);
+        receiptPanel.add(lines2);
+        
+        receiptPanelLayout.putConstraint(SpringLayout.NORTH, lines, 10, SpringLayout.NORTH, receiptPanel);
+		receiptPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, lines, 0, SpringLayout.HORIZONTAL_CENTER, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, dateEntryLog, 10, SpringLayout.SOUTH, lines);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, dateEntryLog, 0, SpringLayout.WEST, lines);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, timeEntryLog, 10, SpringLayout.SOUTH, dateEntryLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, timeEntryLog, 0, SpringLayout.WEST, lines);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, carPlateLogName, 10, SpringLayout.SOUTH, timeEntryLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, carPlateLogName, 0, SpringLayout.WEST, lines);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, dateOutLog, 10, SpringLayout.SOUTH, carPlateLogName);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, dateOutLog, 0, SpringLayout.WEST, lines);
+
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, timeOutLog, 10, SpringLayout.SOUTH, dateOutLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, timeOutLog, 0, SpringLayout.WEST, lines);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, receiptValue, 10, SpringLayout.SOUTH, timeOutLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, receiptValue, 0, SpringLayout.WEST, lines);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, lines2, 10, SpringLayout.SOUTH, receiptValue);
+		receiptPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, lines2, 0, SpringLayout.HORIZONTAL_CENTER, receiptPanel);
+		
+		
+		
+		//Graphics2D g2 = null;
+		//g2.setPaint(new GradientPaint(logsEntryPanel.getHeight(),logsEntryPanel.getHeight(),Color.WHITE,logsEntryPanel.getWidth(),logsEntryPanel.getWidth(),Color.RED));
+		//g2.fill((Shape) newLogPanel);
+		
+		return receiptPanel;
+	}
+        
 
 }
