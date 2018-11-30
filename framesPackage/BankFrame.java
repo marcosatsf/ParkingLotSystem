@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -57,6 +58,9 @@ public class BankFrame extends JFrame{
 	
 	private ParkingLot parking;
 	
+	private JLabel quantityLabel;
+	private int x[] = {0,0,0,0,0};
+	
 	
 	public BankFrame(Component source) {//
 		super("Caixa");
@@ -65,7 +69,7 @@ public class BankFrame extends JFrame{
 		//super.setDefaultCloseOperation(JFrame.D.ISPOSE_ON_CLOSE);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		super.setSize(dim.width/4,dim.height/2);
+		super.setSize(dim.width/2,dim.height/2);
 		
 		
 		this.setLocation((dim.width - this.getSize().width)/2,(dim.height - this.getSize().height)/2);
@@ -89,9 +93,9 @@ public class BankFrame extends JFrame{
 		bankLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
 		bankLabelPanel.setBackground(orange);
 		
-		JLabel configurationLabel = new JLabel("Caixa");
-		configurationLabel.setForeground(Color.BLACK);
-		configurationLabel.setFont(defaultFont);
+		JLabel bankLabel = new JLabel("Caixa");
+		bankLabel.setForeground(Color.BLACK);
+		bankLabel.setFont(defaultFont);
 		
 		JButton closeButton = new JButton(new ImageIcon(closeNormalButton));
         closeButton.setBorder(BorderFactory.createEmptyBorder());
@@ -113,6 +117,8 @@ public class BankFrame extends JFrame{
             	closeButton.setIcon(new ImageIcon(closeClickedButton));
             }
         });
+        
+        
 		
 		SpringLayout configurationPanelLayout = new SpringLayout();
 		JPanel configurationPanel = new JPanel(configurationPanelLayout);
@@ -149,15 +155,7 @@ public class BankFrame extends JFrame{
 		finalDate.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
 		finalDate.setHorizontalAlignment(JLabel.CENTER);
 		finalDate.setBorder(BorderFactory.createEmptyBorder());
-		
-//		JLabel miniTruckConfigurationLabel = new JLabel("Caminhonete: ");
-//		miniTruckConfigurationLabel.setForeground(Color.BLACK);
-//		miniTruckConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
-//		
-//		miniTruckModifier = new JFormattedTextField(fmtDate);
-//		miniTruckModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
-//		miniTruckModifier.setHorizontalAlignment(JLabel.CENTER);
-//		miniTruckModifier.setBorder(BorderFactory.createEmptyBorder());
+
 		
 		JButton confirmButton = new JButton(new ImageIcon(confirmNormalButton));
 		confirmButton.setBorder(BorderFactory.createEmptyBorder());
@@ -180,14 +178,151 @@ public class BankFrame extends JFrame{
             }
         });
 		
-		configurationPanel.add(closeButton);
-		configurationPanel.add(configurationLabel);
+		SpringLayout graphPanelLayout = new SpringLayout();
+		JPanel graphPanel = new JPanel(graphPanelLayout);
+		graphPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+		graphPanel.setBackground(Color.darkGray);
+		//graphPanel.setPreferredSize(new Dimension(300,300));
 		
-		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, configurationLabel, 0, SpringLayout.VERTICAL_CENTER, configurationPanel);
-		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, configurationLabel, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+		JPanel graphingPanel = new GraphingClass(x);
+		//graphingPanel = drawPanel;
+		/*
+		JFrame frame = new JFrame();
+		frame.getContentPane().add(graphingPanel);
+		frame.setSize(300,300);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, closeButton, 0, SpringLayout.VERTICAL_CENTER, configurationPanel);
-		configurationPanelLayout.putConstraint(SpringLayout.EAST, closeButton, -5, SpringLayout.EAST, configurationPanel);
+		graphingPanel.add(drawPanel);
+		graphingPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, drawPanel, 0, SpringLayout.VERTICAL_CENTER, graphingPanel);
+		graphingPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, drawPanel, 0, SpringLayout.HORIZONTAL_CENTER, graphingPanel);
+		*/
+		
+		JLabel intervalLabel2 = new JLabel("Gráfico/Total:");
+		intervalLabel2.setForeground(Color.BLACK);
+		intervalLabel2.setFont(defaultFont.deriveFont(Font.BOLD, 25));
+		
+		JLabel profitLabelName = new JLabel("Lucro neste invervalo: ");
+		profitLabelName.setForeground(Color.BLACK);
+		profitLabelName.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		
+		JLabel profitLabel = new JLabel("R$" + 30.45);
+		profitLabel.setForeground(Color.BLACK);
+		profitLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		
+		JLabel quantityLabelName = new JLabel("Quantidade de veículos: ");
+		quantityLabelName.setForeground(Color.BLACK);
+		quantityLabelName.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		
+		quantityLabel = new JLabel("5");
+		quantityLabel.setForeground(Color.BLACK);
+		quantityLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		/*
+		JFormattedTextField initialDate2 = new JFormattedTextField(fmtDate);
+		initialDate2.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
+		initialDate2.setHorizontalAlignment(JLabel.CENTER);
+		initialDate2.setBorder(BorderFactory.createEmptyBorder());
+		
+		JLabel finalLabel2 = new JLabel("Final: ");
+		finalLabel2.setForeground(Color.BLACK);
+		finalLabel2.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		
+		JFormattedTextField finalDate2 = new JFormattedTextField(fmtDate);
+		finalDate2.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
+		finalDate2.setHorizontalAlignment(JLabel.CENTER);
+		finalDate2.setBorder(BorderFactory.createEmptyBorder());
+		*/
+		
+		bankLabelPanel.add(closeButton);
+		bankLabelPanel.add(bankLabel);
+		
+		bankPanelLabelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, bankLabel, 0, SpringLayout.VERTICAL_CENTER, bankLabelPanel);
+		bankPanelLabelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, bankLabel, 0, SpringLayout.HORIZONTAL_CENTER, bankLabelPanel);
+		
+		bankPanelLabelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, closeButton, 0, SpringLayout.VERTICAL_CENTER, bankLabelPanel);
+		bankPanelLabelLayout.putConstraint(SpringLayout.EAST, closeButton, -5, SpringLayout.EAST, bankLabelPanel);
+
+		
+		configurationPanel.add(intervalLabel);
+		configurationPanel.add(initialLabel);
+		configurationPanel.add(initialDate);
+		configurationPanel.add(finalLabel);
+		configurationPanel.add(finalDate);
+		configurationPanel.add(confirmButton);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, intervalLabel, 10, SpringLayout.NORTH, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, intervalLabel, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, initialLabel, 20, SpringLayout.SOUTH, intervalLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, initialLabel, 50, SpringLayout.WEST, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, initialDate, 0, SpringLayout.VERTICAL_CENTER, initialLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, initialDate, 55, SpringLayout.EAST, initialLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.EAST, initialDate, -30, SpringLayout.EAST, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, finalLabel, 10, SpringLayout.SOUTH, initialLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalLabel, 50, SpringLayout.WEST, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, finalDate, 0, SpringLayout.VERTICAL_CENTER, finalLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalDate, 55, SpringLayout.EAST, finalLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.EAST, finalDate, -30, SpringLayout.EAST, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, confirmButton, 30, SpringLayout.SOUTH, finalLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, confirmButton, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+
+		//modifier.fill = GridBagConstraints.BOTH;		
+		
+		
+		graphPanel.add(intervalLabel2);
+		/*
+		graphPanel.add(initialLabel2);
+		graphPanel.add(initialDate2);
+		graphPanel.add(finalLabel2);
+		graphPanel.add(finalDate2);
+		*/
+		graphPanel.add(graphingPanel);
+		graphPanel.add(profitLabelName);
+		graphPanel.add(profitLabel);
+		graphPanel.add(quantityLabelName);
+		graphPanel.add(quantityLabel);
+		
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, intervalLabel2, 10, SpringLayout.NORTH, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, intervalLabel2, 0, SpringLayout.HORIZONTAL_CENTER, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, graphingPanel, 10, SpringLayout.SOUTH, intervalLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, graphingPanel, 0, SpringLayout.HORIZONTAL_CENTER, intervalLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.EAST, graphingPanel, -20, SpringLayout.EAST, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, graphingPanel, 20, SpringLayout.WEST, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.SOUTH, graphingPanel, -150, SpringLayout.SOUTH, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, profitLabelName, 10, SpringLayout.SOUTH, graphingPanel);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabelName, 50, SpringLayout.WEST, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, profitLabel, 0, SpringLayout.VERTICAL_CENTER, profitLabelName);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabel, 5, SpringLayout.EAST, profitLabelName);
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, quantityLabelName, 10, SpringLayout.SOUTH, profitLabelName);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabelName, 50, SpringLayout.WEST, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, quantityLabel, 0, SpringLayout.VERTICAL_CENTER, quantityLabelName);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabel, 5, SpringLayout.EAST, quantityLabelName);
+		/*
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, initialLabel2, 20, SpringLayout.SOUTH, intervalLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, initialLabel2, 50, SpringLayout.WEST, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, initialDate2, 0, SpringLayout.VERTICAL_CENTER, initialLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, initialDate2, 55, SpringLayout.EAST, initialLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.EAST, initialDate2, -30, SpringLayout.EAST, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, finalLabel2, 10, SpringLayout.SOUTH, initialLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, finalLabel2, 50, SpringLayout.WEST, graphPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, finalDate2, 0, SpringLayout.VERTICAL_CENTER, finalLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, finalDate2, 55, SpringLayout.EAST, finalLabel2);
+		graphPanelLayout.putConstraint(SpringLayout.EAST, finalDate2, -30, SpringLayout.EAST, graphPanel);
+		*/
+
 		
 		modifier.insets = new Insets(10,10,10,10);
 		
@@ -196,81 +331,43 @@ public class BankFrame extends JFrame{
 		modifier.weighty = 0.30;
 		modifier.gridx = 0;
 		modifier.gridy = 0;
+		modifier.gridwidth = 2;
 	
-		add(configurationPanel, modifier);
-
+		add(bankLabelPanel, modifier);
 		
-		configurationPanel.add(baseValueconfigurationLabel);
-		configurationPanel.add(carConfigurationLabel);
-		configurationPanel.add(carModifier);
-		configurationPanel.add(motorcycleConfigurationLabel);
-		configurationPanel.add(motorcycleModifier);
-		configurationPanel.add(miniTruckConfigurationLabel);
-		configurationPanel.add(miniTruckModifier);
-		configurationPanel.add(confirmButton);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, baseValueconfigurationLabel, 35, SpringLayout.NORTH, configurationPanel);
-		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, baseValueconfigurationLabel, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, carConfigurationLabel, 20, SpringLayout.SOUTH, baseValueconfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, carConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carModifier, 0, SpringLayout.VERTICAL_CENTER, carConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, carModifier, 55, SpringLayout.EAST, carConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.EAST, carModifier, -30, SpringLayout.EAST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, motorcycleConfigurationLabel, 10, SpringLayout.SOUTH, carConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, motorcycleModifier, 0, SpringLayout.VERTICAL_CENTER, motorcycleConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleModifier, 55, SpringLayout.EAST, motorcycleConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.EAST, motorcycleModifier, -30, SpringLayout.EAST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, miniTruckConfigurationLabel, 10, SpringLayout.SOUTH, motorcycleConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, miniTruckModifier, 0, SpringLayout.VERTICAL_CENTER, miniTruckConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckModifier, 10, SpringLayout.EAST, miniTruckConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.EAST, miniTruckModifier, -30, SpringLayout.EAST, configurationPanel);
-		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, confirmButton, 30, SpringLayout.SOUTH, miniTruckConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, confirmButton, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
-		
-		modifier.fill = GridBagConstraints.BOTH;
-		modifier.weightx = 1;
+		modifier.weightx = 0.75;
 		modifier.weighty = 1;
 		modifier.gridx = 0;
 		modifier.gridy = 1;
+		modifier.gridwidth = 1;
 		
 		add(configurationPanel, modifier);
+		
+		//modifier.fill = GridBagConstraints.BOTH;
+		modifier.weightx = 1;
+		modifier.weighty = 1;
+		modifier.gridx = 1;
+		modifier.gridy = 1;
+		
+		add(graphPanel, modifier);
+		
 		setVisible(true);
 		//---------------------------------------------------------------------------------Listeners
 		confirmButton.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				float carMult, motorcycleMult, miniTruckMult;
-				String temp;
-				try{
-					temp = carModifier.getText().substring(2).replace(",", ".");
-                    carMult = Float.parseFloat(temp);
-                    temp = motorcycleModifier.getText().substring(2).replace(",",".");
-                    motorcycleMult = Float.parseFloat(temp);
-                    temp = miniTruckModifier.getText().substring(2).replace(",",".");
-                    miniTruckMult = Float.parseFloat(temp);
-					
-					parking = ParkingLot.getInstance();
-					parking.setMultipliers(carMult, motorcycleMult, miniTruckMult);
-				}
-				catch(NumberFormatException e){
-					JOptionPane.showMessageDialog(BankFrame.this,"Informe um valor válido!","Informativo",JOptionPane.WARNING_MESSAGE);
-					System.err.println(e);
-					
-					return;
-				}
+				int tot=0;
+				//teste
+				for(int i=0; i<5; i++)
+					{
+						x[i]++;
+						tot+=x[i];
+					}
+				repaint();
+				quantityLabel.setText(" " + tot);
 				if(source != null)
 					source.setEnabled(true);
-				dispose();
 			}
 		});
 		

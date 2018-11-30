@@ -136,6 +136,7 @@ public class ParkingFrame extends JFrame{
     
 	public static Font defaultFont	= new Font("Trebuchet MS", Font.BOLD, 22);
 	public static Font carPlateFont	= new Font("Unispace", Font.BOLD, 40);
+	public static Font receiptFont  = new Font("Courier New", Font.BOLD, 15);
 	
 	
 	private JFormattedTextField carPlateNewEntry;
@@ -151,12 +152,13 @@ public class ParkingFrame extends JFrame{
 	private MaskFormatter fmtCarPlate;
 	
 	
-	private ArrayList<JPanel> logList = new ArrayList<JPanel>();//testes!
-	//private ArrayList<JLabel> carPlateLog = new ArrayList();
-	//private ArrayList<ImageIcon> carPlateIconLog = new ArrayList();
+	private ArrayList<JPanel> logList = new ArrayList<JPanel>();
 	private JPanel logNewEntryPanel;
     private SpringLayout logNewEntryPanelLayout;
     private JPanel logsEntryPanel;
+    
+    private JPanel receiptPanel;
+    private SpringLayout receiptPanelLayout;
     
     private Dictionary<String, URL> logImages;
     
@@ -695,8 +697,8 @@ public class ParkingFrame extends JFrame{
 		
 		
 		
-		SpringLayout receiptPanelLayout = new SpringLayout();
-		JPanel receiptPanel = new JPanel(receiptPanelLayout);
+		receiptPanelLayout = new SpringLayout();
+		receiptPanel = new JPanel(receiptPanelLayout);
 		receiptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		receiptPanel.setBackground(Color.darkGray);
 		
@@ -1097,6 +1099,25 @@ public class ParkingFrame extends JFrame{
         	
         });
         
+        confirmExitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				JPanel receipt = setReceipt("ABC-1234", "04/04/1997", "08:58", "06/04/1997", "09:45");
+				receiptPanel.add(receipt);
+				
+				receiptPanelLayout.putConstraint(SpringLayout.EAST, receipt, -55, SpringLayout.EAST, receiptPanel);
+				receiptPanelLayout.putConstraint(SpringLayout.WEST, receipt, 55, SpringLayout.WEST, receiptPanel);
+				receiptPanelLayout.putConstraint(SpringLayout.SOUTH, receipt, -100, SpringLayout.SOUTH, receiptPanel);
+				receiptPanelLayout.putConstraint(SpringLayout.NORTH, receipt, 90, SpringLayout.NORTH, receiptPanel);
+				
+				revalidate();
+				repaint();
+				
+				clearEntry();
+			}			
+        	
+        });
+        
 //        Timer tm = new Timer(3000,new ActionListener(){
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -1226,19 +1247,15 @@ public class ParkingFrame extends JFrame{
 		timeLog.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		timeLog.setForeground(Color.BLACK);
 		
-		JLabel carPlateLogName = new JLabel("Placa: ");
+		JLabel carPlateLogName = new JLabel("Placa: " + carPlateNewEntry.getText());
 		carPlateLogName.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		carPlateLogName.setForeground(Color.BLACK);
-		JLabel carPlateLog = new JLabel(carPlateNewEntry.getText());
-		carPlateLog.setFont(carPlateFont.deriveFont(Font.BOLD, 18));
-		carPlateLog.setForeground(Color.BLACK);
 		
 		JLabel carPlateIconLog = new JLabel(new ImageIcon(logImages.get(iconType)));
 		
 		newLogPanel.add(dateLog);
 		newLogPanel.add(timeLog);
 		newLogPanel.add(carPlateLogName);
-		newLogPanel.add(carPlateLog);
 		newLogPanel.add(carPlateIconLog);
 		
 		
@@ -1247,9 +1264,6 @@ public class ParkingFrame extends JFrame{
 		
 		newLogPanelLayout.putConstraint(SpringLayout.WEST, carPlateLogName, 10, SpringLayout.WEST, newLogPanel);
 		newLogPanelLayout.putConstraint(SpringLayout.NORTH, carPlateLogName, 10, SpringLayout.SOUTH, timeLog);
-		
-		newLogPanelLayout.putConstraint(SpringLayout.WEST, carPlateLog, 8, SpringLayout.EAST, carPlateLogName);
-		newLogPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carPlateLog, 0, SpringLayout.VERTICAL_CENTER, carPlateLogName);
 		
 		newLogPanelLayout.putConstraint(SpringLayout.WEST, dateLog, 10, SpringLayout.WEST, newLogPanel);
 		newLogPanelLayout.putConstraint(SpringLayout.SOUTH, dateLog, -10, SpringLayout.NORTH, timeLog);
@@ -1264,6 +1278,88 @@ public class ParkingFrame extends JFrame{
 		//g2.fill((Shape) newLogPanel);
 		
 		return newLogPanel;
+	}
+	
+	private JPanel setReceipt(String carPlateSelected, String dateEntry, String timeEntry, String dateOut, String timeOut){		
+		SpringLayout receiptPanelLayout = new SpringLayout();
+		JPanel receiptPanel = new JPanel(receiptPanelLayout);
+		receiptPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+		receiptPanel.setBackground(new Color(255, 255, 204));
+		//newLogPanel.setOpaque(false);
+		//newLogPanel.setPreferredSize(new Dimension(100, 30));
+		
+		JLabel lines = new JLabel("--------------------------------");
+		lines.setFont(receiptFont);
+		lines.setForeground(Color.BLACK);
+		
+		JLabel dateEntryLog = new JLabel("Data de entrada: " + dateEntry);
+		dateEntryLog.setFont(receiptFont);
+		dateEntryLog.setForeground(Color.BLACK);
+		
+		JLabel timeEntryLog = new JLabel("Horário de entrada: " + timeEntry);
+		timeEntryLog.setFont(receiptFont);
+		timeEntryLog.setForeground(Color.BLACK);
+		
+		JLabel carPlateLogName = new JLabel("Placa: " + carPlateNewEntry.getText());
+		carPlateLogName.setFont(receiptFont);
+		carPlateLogName.setForeground(Color.BLACK);
+		
+		JLabel dateOutLog = new JLabel("Data de saída: " + dateOut);
+		dateOutLog.setFont(receiptFont);
+		dateOutLog.setForeground(Color.BLACK);
+		
+		JLabel timeOutLog = new JLabel("Horário de saída: " + timeOut);
+		timeOutLog.setFont(receiptFont);
+		timeOutLog.setForeground(Color.BLACK);
+		
+		JLabel receiptValue = new JLabel("Preço a pagar: R$ " + 45.30);
+		receiptValue.setFont(receiptFont);
+		receiptValue.setForeground(Color.BLACK);
+		
+		JLabel lines2 = new JLabel("--------------------------------");
+		lines2.setFont(receiptFont);
+		lines2.setForeground(Color.BLACK);
+		
+		receiptPanel.add(lines);
+		receiptPanel.add(dateEntryLog);
+		receiptPanel.add(timeEntryLog);
+		receiptPanel.add(carPlateLogName);
+		receiptPanel.add(dateOutLog);
+		receiptPanel.add(timeOutLog);
+		receiptPanel.add(receiptValue);
+		receiptPanel.add(lines2);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, lines, 10, SpringLayout.NORTH, receiptPanel);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, lines, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, dateEntryLog, 10, SpringLayout.SOUTH, lines);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, dateEntryLog, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, timeEntryLog, 10, SpringLayout.SOUTH, dateEntryLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, timeEntryLog, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, carPlateLogName, 10, SpringLayout.SOUTH, timeEntryLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, carPlateLogName, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, dateOutLog, 10, SpringLayout.SOUTH, carPlateLogName);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, dateOutLog, 20, SpringLayout.WEST, receiptPanel);
+
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, timeOutLog, 10, SpringLayout.SOUTH, dateOutLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, timeOutLog, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, receiptValue, 10, SpringLayout.SOUTH, timeOutLog);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, receiptValue, 20, SpringLayout.WEST, receiptPanel);
+		
+		receiptPanelLayout.putConstraint(SpringLayout.NORTH, lines2, 10, SpringLayout.SOUTH, receiptValue);
+		receiptPanelLayout.putConstraint(SpringLayout.WEST, lines2, 20, SpringLayout.WEST, receiptPanel);
+		
+		
+		
+		//Graphics2D g2 = null;
+		//g2.setPaint(new GradientPaint(logsEntryPanel.getHeight(),logsEntryPanel.getHeight(),Color.WHITE,logsEntryPanel.getWidth(),logsEntryPanel.getWidth(),Color.RED));
+		//g2.fill((Shape) newLogPanel);
+		
+		return receiptPanel;
 	}
 
 }

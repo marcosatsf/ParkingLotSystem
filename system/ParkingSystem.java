@@ -2,6 +2,8 @@ package system;
 
 import javax.swing.UIManager;
 
+import framesPackage.BankFrame;
+import framesPackage.ConfigurationFrame;
 import framesPackage.ParkingFrame;
 
 public class ParkingSystem {
@@ -12,7 +14,10 @@ public class ParkingSystem {
 		ChangeUILook(look);
 		
 		new ParkingFrame();
+		new BankFrame(null);
 
+		
+		
 	}
 	
 	private static void ChangeUILook(int look) {
