@@ -14,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,12 +60,15 @@ public class BankFrame extends JFrame{
 	
 	private MaskFormatter fmtDate;
 	
-	private ParkingLot parking;
+	private ParkingLot parking = ParkingLot.getInstance();
 	
 	private JLabel profitLabel;
 	private JLabel quantityLabel;
 	
 	private ArrayList<Integer> toCalculate = null;
+	
+	JPanel graphingPanel;
+	private GraphingClass graphic;
 	
 	
 	public BankFrame(Component source) {//
@@ -189,7 +194,8 @@ public class BankFrame extends JFrame{
 		//graphPanel.setPreferredSize(new Dimension(300,300));
 		
 		//TODO - Passar a lista no graphics
-		JPanel graphingPanel = new GraphingClass(toCalculate);
+		graphic = new GraphingClass(toCalculate);
+		graphingPanel = graphic;
 		
 		JLabel intervalLabel2 = new JLabel("Gráfico (Carros pagos/dia):");
 		intervalLabel2.setForeground(Color.BLACK);
@@ -272,7 +278,7 @@ public class BankFrame extends JFrame{
 		graphPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, graphingPanel, 0, SpringLayout.HORIZONTAL_CENTER, intervalLabel2);
 		graphPanelLayout.putConstraint(SpringLayout.EAST, graphingPanel, -20, SpringLayout.EAST, graphPanel);
 		graphPanelLayout.putConstraint(SpringLayout.WEST, graphingPanel, 20, SpringLayout.WEST, graphPanel);
-		graphPanelLayout.putConstraint(SpringLayout.SOUTH, graphingPanel, -150, SpringLayout.SOUTH, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.SOUTH, graphingPanel, -100, SpringLayout.SOUTH, graphPanel);
 		
 		graphPanelLayout.putConstraint(SpringLayout.NORTH, profitLabelName, 10, SpringLayout.SOUTH, graphingPanel);
 		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabelName, 50, SpringLayout.WEST, graphPanel);
@@ -320,13 +326,32 @@ public class BankFrame extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				toCalculate = parking.getQuantityArray(parking.toLocalDateTime(initialDate.getText()),parking.toLocalDateTime(finalDate.getText()));
+				
+				LocalDateTime initialDateTime;
+				LocalDateTime finalDateTime;
+				
+				try {
+					initialDateTime = parking.toLocalDateTime(initialDate.getText());
+				}catch(DateTimeException | NumberFormatException e) {
+					JOptionPane.showMessageDialog(BankFrame.this, "Data Inicial inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				try {
+					finalDateTime = parking.toLocalDateTime(finalDate.getText());
+				}catch(DateTimeException | NumberFormatException e) {
+					JOptionPane.showMessageDialog(BankFrame.this, "Data Final inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+			
+				toCalculate = parking.getQuantityArray(initialDateTime,finalDateTime);
+				//graphingPanel = new GraphingClass(toCalculate);
+				graphic.changeInput(toCalculate);
+	
 				profitLabel.setText("R$ " + 4);
 				quantityLabel.setText(Integer.toString(parking.getQuantity(parking.toLocalDateTime(initialDate.getText()),parking.toLocalDateTime(finalDate.getText()))));
 				repaint();
-				quantityLabel.setText(" ");
-				if(source != null)
-					source.setEnabled(true);
 			}
 		});
 		

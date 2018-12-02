@@ -27,18 +27,17 @@ public class ParkingLot implements Serializable{
 	}
 	
 	public static ParkingLot getInstance(){
-		if(instance == null) instance = loadParkingLot();
+		if(instance == null) {
+			if((instance = FileManager.loadFileData()) == null) {
+				instance = new ParkingLot();
+			}
+		}
 		return instance;
 	}
 	
-	private static ParkingLot loadParkingLot() {
-		instance = new FileManager().loadFileData();
-		if(instance == null) instance = new ParkingLot();
-		return instance;
-	}
 	
 	public void saveParkingLot() {
-		new FileManager().saveFileData(instance);
+		FileManager.saveFileData(instance);
 	}
 	
 	public void setMultipliers(float carMult, float motorcycleMult, float miniTruckMult){
@@ -170,8 +169,11 @@ public class ParkingLot implements Serializable{
 		ArrayList<Integer> counter = new ArrayList<Integer>();
 		
 		while(initialDate.compareTo(finalDate) < 1){//compareTo returns 1 when x is greater than y chronologically
-			counter.add(vehicleOutByDay.get(initialDate).size());
-			initialDate.plusDays(1);
+			List<String> dayList = vehicleOutByDay.get(initialDate);
+			if(dayList != null)
+				counter.add(dayList.size());
+			else counter.add(0);
+			initialDate = initialDate.plusDays(1);
 		}
 		return counter;
 	}
@@ -184,10 +186,11 @@ public class ParkingLot implements Serializable{
 		return counter;
 	}
 	
-	public LocalDateTime toLocalDateTime(String stringValue){
+	public LocalDateTime toLocalDateTime(String stringValue) throws DateTimeException{
+		
 		String[] datePieces = stringValue.split("/");
 		
-		int year, monthNumb,day, hour, minute;
+		int year, monthNumb,day;
 		Month month;
 		
 		year = Integer.parseInt(datePieces[2]);

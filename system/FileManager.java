@@ -13,7 +13,7 @@ public class FileManager {
 	public FileManager() {
 	}
 	
-	public ParkingLot loadFileData() {
+	public static  ParkingLot loadFileData() {
 		ParkingLot parking = null;
 		
 		try {
@@ -24,14 +24,13 @@ public class FileManager {
 			parking = (ParkingLot) input.readObject();
 			input.close();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		} catch (NullPointerException e) {
-			e.printStackTrace();
+		
 		}
 
-		return parking;
 		
+		return parking;
 	}
 	
 	/*
@@ -75,7 +74,7 @@ public class FileManager {
 		}
 	*/
 	
-	public void saveFileData(ParkingLot parking) {
+	public static void saveFileData(ParkingLot parking) {
 		
 		try {
 			File file = new File(defaultPath);

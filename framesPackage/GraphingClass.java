@@ -15,6 +15,10 @@ public class GraphingClass extends JPanel {
 	public GraphingClass(ArrayList<Integer> inputData) {
         this.inputData = inputData;
     }
+    
+    public void changeInput(ArrayList<Integer> input) {
+    	this.inputData = input;
+    }
 
     @Override
     public void paintComponent(final Graphics g) {
