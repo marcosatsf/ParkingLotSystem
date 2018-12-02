@@ -1,24 +1,26 @@
 package system;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Floor {
+public class Floor implements Serializable{
 	
 	private int carsSlotNumb, motorcyclesSlotNumb, miniTrucksSlotNumb;
 	
-	private List<Slot> slots = new ArrayList<Slot>();
+	private List<Slot> slots;
 
 	public Floor(int carsSlotNumb,int motorcyclesSlotNumb,int miniTrucksSlotNumb) {
 		this.carsSlotNumb = carsSlotNumb;
 		this.motorcyclesSlotNumb = motorcyclesSlotNumb;
 		this.miniTrucksSlotNumb = miniTrucksSlotNumb;
 		
+		slots = new ArrayList<Slot>();
+		
 		for(int i = (carsSlotNumb + motorcyclesSlotNumb + miniTrucksSlotNumb); i > 0; i--){
 			slots.add(new Slot());
 		}
 	}
-	
 	
 	public boolean addVehicle(Vehicle newVehicle) {
 		
@@ -87,6 +89,10 @@ public class Floor {
 	
 	public List<Slot> getSlots(){
 		return slots;
+	}
+	
+	public void setSlots(List<Slot> slots) {
+		this.slots = slots;
 	}
 	
 	public VehicleType getVehicleType(String plate) {

@@ -1,6 +1,8 @@
 package system;
 
-public class Slot {
+import java.io.Serializable;
+
+public class Slot implements Serializable{
 
 	private boolean disponibility;
 	
@@ -12,6 +14,10 @@ public class Slot {
 		
 		disponibility = true;
 		
+	}
+	
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
 	}
 	
 	

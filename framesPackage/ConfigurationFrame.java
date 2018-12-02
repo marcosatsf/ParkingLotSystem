@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import javax.swing.BorderFactory;
@@ -55,7 +56,7 @@ public class ConfigurationFrame extends JFrame{
 	
 	private MaskFormatter fmtPrice;
 	
-	private ParkingLot parking;
+	private ParkingLot parking = ParkingLot.getInstance();
 	
 	
 	public ConfigurationFrame(Component source) {//
@@ -140,6 +141,9 @@ public class ConfigurationFrame extends JFrame{
 		carModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
 		carModifier.setHorizontalAlignment(JLabel.CENTER);
 		carModifier.setBorder(BorderFactory.createEmptyBorder());
+		carModifier.setText("R$ " + new DecimalFormat("##,##").format(parking.getMultCar()));
+		
+		//carModifier.setText("R$ " + Float.toString(parking.getMultCar()));
 		
 		JLabel motorcycleConfigurationLabel = new JLabel("Moto: ");
 		motorcycleConfigurationLabel.setForeground(Color.BLACK);
@@ -149,6 +153,7 @@ public class ConfigurationFrame extends JFrame{
 		motorcycleModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
 		motorcycleModifier.setHorizontalAlignment(JLabel.CENTER);
 		motorcycleModifier.setBorder(BorderFactory.createEmptyBorder());
+		motorcycleModifier.setText("R$ " + new DecimalFormat("##,00").format(parking.getMultMotorcycle()));
 		
 		JLabel miniTruckConfigurationLabel = new JLabel("Caminhonete: ");
 		miniTruckConfigurationLabel.setForeground(Color.BLACK);
@@ -158,6 +163,7 @@ public class ConfigurationFrame extends JFrame{
 		miniTruckModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
 		miniTruckModifier.setHorizontalAlignment(JLabel.CENTER);
 		miniTruckModifier.setBorder(BorderFactory.createEmptyBorder());
+		miniTruckModifier.setText("R$ " + new DecimalFormat("##,##").format(parking.getMultMiniTruck()));
 		
 		JButton confirmButton = new JButton(new ImageIcon(confirmNormalButton));
 		confirmButton.setBorder(BorderFactory.createEmptyBorder());
@@ -258,8 +264,7 @@ public class ConfigurationFrame extends JFrame{
                     motorcycleMult = Float.parseFloat(temp);
                     temp = miniTruckModifier.getText().substring(2).replace(",",".");
                     miniTruckMult = Float.parseFloat(temp);
-					
-					parking = ParkingLot.getInstance();
+				
 					parking.setMultipliers(carMult, motorcycleMult, miniTruckMult);
 				}
 				catch(NumberFormatException e){

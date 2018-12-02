@@ -1,5 +1,6 @@
 package system;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -7,57 +8,56 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-public class Bank {
+public class Bank implements Serializable{
 
-	private float carMult, motorcycleMult, miniTruckMult;
+	private double carMult, motorcycleMult, miniTruckMult;
 	
-	private Dictionary<LocalDateTime,List<Float>> plateToValue;//valores pagos naquele dia
+	private Dictionary<LocalDateTime,List<Double>> plateToValue;//valores pagos naquele dia
 	
 	public Bank(){
 		this(10,5,15); //Multiplicadores Iniciais
 	}
 	
-	private Bank(float carMult,float motorcycleMult, float miniTruckMult){
-		plateToValue = new Hashtable<LocalDateTime,List<Float>>();
+	private Bank(double carMult,double motorcycleMult, double miniTruckMult){
+		plateToValue = new Hashtable<LocalDateTime,List<Double>>();
 		this.carMult = carMult;
 		this.motorcycleMult = motorcycleMult;
 		this.miniTruckMult = miniTruckMult;
 	}
 	
-	
-	public void addPlateToValue(LocalDateTime exitDate, float value) {
-		List<Float> list = plateToValue.get(exitDate);
+	public void addPlateToValue(LocalDateTime exitDate, double value) {
+		List<Double> list = plateToValue.get(exitDate);
 		if(list != null) {
 			list.add(value);
 		}else {
-			list = new ArrayList<Float>();
+			list = new ArrayList<Double>();
 			list.add(value);
 		}
 		plateToValue.put(exitDate, list);
 	}
 	
-	public void setMultipliers(float carMult, float motorcycleMult, float miniTruckMult){
+	public void setMultipliers(double carMult, double motorcycleMult, double miniTruckMult){
 		this.carMult = carMult;
 		this.motorcycleMult = motorcycleMult;
 		this.miniTruckMult = miniTruckMult;
 	}
 	
-	public float getMultCar()
+	public double getMultCar()
 	{
 		return carMult;
 	}
-	public float getMultMotorcycle()
+	public double getMultMotorcycle()
 	{
 		return motorcycleMult;
 	}
-	public float getMultMiniTruck()
+	public double getMultMiniTruck()
 	{
 		return miniTruckMult;
 	}
 	
-	public float calculatePrice(LocalDateTime entryDate, LocalDateTime exitDate, VehicleType type) {
+	public double calculatePrice(LocalDateTime entryDate, LocalDateTime exitDate, VehicleType type) {
 		
-		float value = 1;
+		double value = 1;
 				
         long hoursDiff = ChronoUnit.HOURS.between(entryDate, exitDate);
         
@@ -75,7 +75,6 @@ public class Bank {
 			break;
 		default:
 			break;
-        
         }
         
         if(hoursDiff > 0) {
@@ -86,9 +85,9 @@ public class Bank {
 		return value;
 	}
 	
-	public float getPriceByDay(LocalDateTime whichDay){
-		float counter =0;
-		for(Float actualValue : plateToValue.get(whichDay)){
+	public double getPriceByDay(LocalDateTime whichDay){
+		double counter =0;
+		for(Double actualValue : plateToValue.get(whichDay)){
 			counter+=actualValue;
 		}
 		return counter;

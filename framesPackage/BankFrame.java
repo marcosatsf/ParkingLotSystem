@@ -14,6 +14,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -52,13 +55,15 @@ public class BankFrame extends JFrame{
 	
 	private JFormattedTextField initialDate;
 	private JFormattedTextField finalDate;
-	private JFormattedTextField motorcycleModifier;	
 	
 	private MaskFormatter fmtDate;
 	
 	private ParkingLot parking;
 	
+	private JLabel profitLabel;
 	private JLabel quantityLabel;
+	
+	private ArrayList<Integer> toCalculate = null;
 	
 	
 	public BankFrame(Component source) {//
@@ -179,27 +184,14 @@ public class BankFrame extends JFrame{
 		
 		SpringLayout graphPanelLayout = new SpringLayout();
 		JPanel graphPanel = new JPanel(graphPanelLayout);
-		graphPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+		graphPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4, true));
 		graphPanel.setBackground(Color.darkGray);
 		//graphPanel.setPreferredSize(new Dimension(300,300));
 		
 		//TODO - Passar a lista no graphics
-		//JPanel graphingPanel = new GraphingClass();
+		JPanel graphingPanel = new GraphingClass(toCalculate);
 		
-		//graphingPanel = drawPanel;
-		/*
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(graphingPanel);
-		frame.setSize(300,300);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		graphingPanel.add(drawPanel);
-		graphingPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, drawPanel, 0, SpringLayout.VERTICAL_CENTER, graphingPanel);
-		graphingPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, drawPanel, 0, SpringLayout.HORIZONTAL_CENTER, graphingPanel);
-		*/
-		
-		JLabel intervalLabel2 = new JLabel("Gráfico/Total:");
+		JLabel intervalLabel2 = new JLabel("Gráfico (Carros pagos/dia):");
 		intervalLabel2.setForeground(Color.BLACK);
 		intervalLabel2.setFont(defaultFont.deriveFont(Font.BOLD, 25));
 		
@@ -207,32 +199,17 @@ public class BankFrame extends JFrame{
 		profitLabelName.setForeground(Color.BLACK);
 		profitLabelName.setFont(defaultFont.deriveFont(Font.BOLD, 14));
 		
-		JLabel profitLabel = new JLabel("R$" + 30.45);
+		profitLabel = new JLabel("R$ --,--");
 		profitLabel.setForeground(Color.BLACK);
 		profitLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
 		
-		JLabel quantityLabelName = new JLabel("Quantidade de veículos: ");
+		JLabel quantityLabelName = new JLabel("Quantidade de veículos total: ");
 		quantityLabelName.setForeground(Color.BLACK);
 		quantityLabelName.setFont(defaultFont.deriveFont(Font.BOLD, 14));
 		
-		quantityLabel = new JLabel("5");
+		quantityLabel = new JLabel("-");
 		quantityLabel.setForeground(Color.BLACK);
 		quantityLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
-		/*
-		JFormattedTextField initialDate2 = new JFormattedTextField(fmtDate);
-		initialDate2.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
-		initialDate2.setHorizontalAlignment(JLabel.CENTER);
-		initialDate2.setBorder(BorderFactory.createEmptyBorder());
-		
-		JLabel finalLabel2 = new JLabel("Final: ");
-		finalLabel2.setForeground(Color.BLACK);
-		finalLabel2.setFont(defaultFont.deriveFont(Font.BOLD, 14));
-		
-		JFormattedTextField finalDate2 = new JFormattedTextField(fmtDate);
-		finalDate2.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
-		finalDate2.setHorizontalAlignment(JLabel.CENTER);
-		finalDate2.setBorder(BorderFactory.createEmptyBorder());
-		*/
 		
 		bankLabelPanel.add(closeButton);
 		bankLabelPanel.add(bankLabel);
@@ -308,21 +285,6 @@ public class BankFrame extends JFrame{
 		
 		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, quantityLabel, 0, SpringLayout.VERTICAL_CENTER, quantityLabelName);
 		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabel, 5, SpringLayout.EAST, quantityLabelName);
-		/*
-		graphPanelLayout.putConstraint(SpringLayout.NORTH, initialLabel2, 20, SpringLayout.SOUTH, intervalLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, initialLabel2, 50, SpringLayout.WEST, graphPanel);
-		
-		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, initialDate2, 0, SpringLayout.VERTICAL_CENTER, initialLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, initialDate2, 55, SpringLayout.EAST, initialLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.EAST, initialDate2, -30, SpringLayout.EAST, graphPanel);
-		
-		graphPanelLayout.putConstraint(SpringLayout.NORTH, finalLabel2, 10, SpringLayout.SOUTH, initialLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, finalLabel2, 50, SpringLayout.WEST, graphPanel);
-		
-		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, finalDate2, 0, SpringLayout.VERTICAL_CENTER, finalLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, finalDate2, 55, SpringLayout.EAST, finalLabel2);
-		graphPanelLayout.putConstraint(SpringLayout.EAST, finalDate2, -30, SpringLayout.EAST, graphPanel);
-		*/
 
 		
 		modifier.insets = new Insets(10,10,10,10);
@@ -358,6 +320,9 @@ public class BankFrame extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent a) {
+				toCalculate = parking.getQuantityArray(parking.toLocalDateTime(initialDate.getText()),parking.toLocalDateTime(finalDate.getText()));
+				profitLabel.setText("R$ " + 4);
+				quantityLabel.setText(Integer.toString(parking.getQuantity(parking.toLocalDateTime(initialDate.getText()),parking.toLocalDateTime(finalDate.getText()))));
 				repaint();
 				quantityLabel.setText(" ");
 				if(source != null)

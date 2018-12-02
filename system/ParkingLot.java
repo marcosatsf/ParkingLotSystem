@@ -1,5 +1,6 @@
 package system;
 
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -8,7 +9,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-public class ParkingLot {
+public class ParkingLot implements Serializable{
 
 	private static ParkingLot instance = null;
 	private List<Floor> floors;
@@ -26,17 +27,37 @@ public class ParkingLot {
 	}
 	
 	public static ParkingLot getInstance(){
+		if(instance == null) instance = loadParkingLot();
+		return instance;
+	}
+	
+	private static ParkingLot loadParkingLot() {
+		instance = new FileManager().loadFileData();
 		if(instance == null) instance = new ParkingLot();
 		return instance;
+	}
+	
+	public void saveParkingLot() {
+		new FileManager().saveFileData(instance);
 	}
 	
 	public void setMultipliers(float carMult, float motorcycleMult, float miniTruckMult){
 		bank.setMultipliers(carMult, motorcycleMult, miniTruckMult);
 	}
 	
-	public float getMultCar()
+	public double getMultCar()
 	{
 		return bank.getMultCar();
+	}
+	
+	public double getMultMotorcycle()
+	{
+		return bank.getMultMotorcycle();
+	}
+	
+	public double getMultMiniTruck()
+	{
+		return bank.getMultMiniTruck();
 	}
 	
 	public void addVehicle(VehicleType type, String entryDateString, String entryTimeString, String vehiclePlate) 
@@ -87,11 +108,11 @@ public class ParkingLot {
 		
 	}
 	
-	public float removeVehicle(String vehiclePlate, String exitDateString, String exitTimeString) 
+	public double removeVehicle(String vehiclePlate, String exitDateString, String exitTimeString) 
 	throws BreakingTimeException, DateTimeException, VehicleNotFoundException
 	{
 		
-		float value = 0;
+		double value = 0;
 		
 		boolean found = false;
 		
@@ -143,14 +164,45 @@ public class ParkingLot {
 		return value;
 	}
 	
-	public int getQuantity(LocalDateTime initialDate, LocalDateTime finalDate)
+	@SuppressWarnings("javadoc")
+	public ArrayList<Integer> getQuantityArray(LocalDateTime initialDate, LocalDateTime finalDate)
 	{
-		int counter =0;
-		while(initialDate.getDayOfMonth() != finalDate.getDayOfMonth()){
-			counter += vehicleOutByDay.get(initialDate).size();
+		ArrayList<Integer> counter = new ArrayList<Integer>();
+		
+		while(initialDate.compareTo(finalDate) < 1){//compareTo returns 1 when x is greater than y chronologically
+			counter.add(vehicleOutByDay.get(initialDate).size());
 			initialDate.plusDays(1);
 		}
 		return counter;
+	}
+	
+	public int getQuantity(LocalDateTime initialDate, LocalDateTime finalDate)
+	{
+		int counter =0;
+		ArrayList<Integer> aux = getQuantityArray(initialDate,finalDate);
+		for(Integer x : aux) counter += x;
+		return counter;
+	}
+	
+	public LocalDateTime toLocalDateTime(String stringValue){
+		String[] datePieces = stringValue.split("/");
+		
+		int year, monthNumb,day, hour, minute;
+		Month month;
+		
+		year = Integer.parseInt(datePieces[2]);
+		monthNumb = Integer.parseInt(datePieces[1]);
+		month = Month.of(monthNumb);
+		day = Integer.parseInt(datePieces[0]);
+		
+		LocalDateTime date;
+		try {
+			date = LocalDateTime.of(year, month, day, 0, 0);
+		}catch(DateTimeException dateException) {
+			throw dateException;
+		}
+		
+		return date;
 	}
 	
 	public List<VehicleType> getSlotsVehicleType(int whichFloor){//retorna uma lista dos slots

@@ -39,7 +39,7 @@ import system.VehicleAlreadyExistsException;
 import system.VehicleNotFoundException;
 import system.VehicleType;
 
-//ícone 20x20
+//ï¿½cone 20x20
 @SuppressWarnings("serial")
 public class ParkingFrame extends JFrame{
 
@@ -267,6 +267,8 @@ public class ParkingFrame extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 bankButton.setIcon(new ImageIcon(bankClickedButton));
+                
+                new BankFrame(ParkingFrame.this);
             }
         });
 
@@ -377,7 +379,7 @@ public class ParkingFrame extends JFrame{
 		timeNewEntry.setHorizontalAlignment(JLabel.CENTER);
 		timeNewEntry.setBorder(BorderFactory.createEmptyBorder());
 		
-		JLabel vehicleTypeEntryLabel = new JLabel("Veículo:");
+		JLabel vehicleTypeEntryLabel = new JLabel("VeÃ­culo:");
 		vehicleTypeEntryLabel.setFont(defaultFont);
 		vehicleTypeEntryLabel.setForeground(Color.BLACK);
 		
@@ -501,7 +503,7 @@ public class ParkingFrame extends JFrame{
 		logNewEntryLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
 		logNewEntryLabelPanel.setBackground(orange);
 		
-		JLabel logNewEntryLabel = new JLabel("Últimas Entradas");
+		JLabel logNewEntryLabel = new JLabel("Ãšltimas entradas");
 		logNewEntryLabel.setForeground(Color.BLACK);
 		logNewEntryLabel.setFont(defaultFont);
 		
@@ -555,7 +557,7 @@ public class ParkingFrame extends JFrame{
 		newExitLabelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, false));
 		newExitLabelPanel.setBackground(orange);
 		
-		JLabel newExitLabel = new JLabel("Registrar Saída");
+		JLabel newExitLabel = new JLabel("Registrar SaÃ­da");
 		newExitLabel.setForeground(Color.BLACK);
 		newExitLabel.setFont(defaultFont);
 		
@@ -591,7 +593,7 @@ public class ParkingFrame extends JFrame{
 		timeNewExit.setHorizontalAlignment(JLabel.CENTER);
 		timeNewExit.setBorder(BorderFactory.createEmptyBorder());
 		
-		JLabel vehicleTypeExitLabel = new JLabel("Veículo:");
+		JLabel vehicleTypeExitLabel = new JLabel("VeÃ­culo:");
 		vehicleTypeExitLabel.setFont(defaultFont);
 		vehicleTypeExitLabel.setForeground(Color.BLACK);
 		
@@ -860,7 +862,7 @@ public class ParkingFrame extends JFrame{
             public void mouseClicked(MouseEvent e) {
             	floorTButton.setIcon(new ImageIcon(floor0ClickedButton));
             	floor1Button.setIcon(new ImageIcon(floor1NormalButton));
-            	floorIndicatorLabel.setText("Térreo");
+            	floorIndicatorLabel.setText("TÃ©rreo");
             	floorTSelected = true;
             	floor1Selected = false;
             	if(imageParkingLotLabel.isVisible()) imageParkingLotLabel.setVisible(false);
@@ -990,6 +992,7 @@ public class ParkingFrame extends JFrame{
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) 
 				{
+					parkingLot.saveParkingLot();
                     System.exit(0);
                 }
 			}
@@ -1019,20 +1022,20 @@ public class ParkingFrame extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {	
 				
 				if(dateNewEntry.getText().equals("  /  /    ")) {
-					//Data Inválida
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Data inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					//Data Invï¿½lida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(timeNewEntry.getText().equals("  :  ")) {
-					//Hora Inválida
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					//Hora Invï¿½lida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(carPlateNewEntry.getText().equals("   -    ")) {
-					//Placa Inválida
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					//Placa Invï¿½lida
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
@@ -1065,7 +1068,7 @@ public class ParkingFrame extends JFrame{
 					JOptionPane.showMessageDialog(ParkingFrame.this, outOfspace.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}catch(DateTimeException dateException) {
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 
@@ -1120,21 +1123,21 @@ public class ParkingFrame extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {	
 				
 				if(dateNewExit.getText().equals("  /  /    ")) {
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Data inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(timeNewExit.getText().equals("  :  ")) {
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Hora invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
 				if(carPlateNewExit.getText().equals("   -    ")) {
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Placa invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
-				float value = 0;
+				double value = 0;
 				
 				try {
 					value = parkingLot.removeVehicle(carPlateNewExit.getText(), dateNewExit.getText(), timeNewExit.getText());
@@ -1144,7 +1147,7 @@ public class ParkingFrame extends JFrame{
 					return;
 				}
 				catch(DateTimeException dateException) {
-					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora inválida!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(ParkingFrame.this, "Data ou Hora invÃ¡lida!", "Aviso", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				catch(VehicleNotFoundException notFound) {
@@ -1165,6 +1168,7 @@ public class ParkingFrame extends JFrame{
 				
 				JPanel receipt = setReceipt(carPlateNewExit.getText(), entryDateString, entryTimeString, dateNewExit.getText(), timeNewExit.getText(), value);
                 receiptPanel.add(receipt);
+                receipt.setVisible(false);
 
                 receiptPanelLayout.putConstraint(SpringLayout.EAST, receipt, 0, SpringLayout.EAST, receiptPanel);
                 receiptPanelLayout.putConstraint(SpringLayout.WEST, receipt, 0, SpringLayout.WEST, receiptPanel);
@@ -1173,6 +1177,7 @@ public class ParkingFrame extends JFrame{
 
                 revalidate();
                 repaint();
+                receipt.setVisible(true);
 				
 				clearExit();
 			}
@@ -1289,7 +1294,7 @@ public class ParkingFrame extends JFrame{
 		dateLog.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		dateLog.setForeground(Color.BLACK);
 		
-		JLabel timeLog = new JLabel("Horário de entrada: " + timeEntryLog);
+		JLabel timeLog = new JLabel("HorÃ¡rio de entrada: " + timeEntryLog);
 		timeLog.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		timeLog.setForeground(Color.BLACK);
 		
@@ -1333,7 +1338,7 @@ public class ParkingFrame extends JFrame{
 		return newLogPanel;
 	}
 	
-	private JPanel setReceipt(String carPlateSelected, String dateEntry, String timeEntry, String dateOut, String timeOut, float value){
+	private JPanel setReceipt(String carPlateSelected, String dateEntry, String timeEntry, String dateOut, String timeOut, double value){
         SpringLayout receiptPanelLayout = new SpringLayout();
         JPanel receiptPanel = new JPanel(receiptPanelLayout);
         receiptPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
@@ -1349,7 +1354,7 @@ public class ParkingFrame extends JFrame{
         dateEntryLog.setFont(receiptFont);
         dateEntryLog.setForeground(Color.BLACK);
 
-        JLabel timeEntryLog = new JLabel("Horário de entrada: " + timeEntry);
+        JLabel timeEntryLog = new JLabel("HorÃ¡rio de entrada: " + timeEntry);
         timeEntryLog.setFont(receiptFont);
         timeEntryLog.setForeground(Color.BLACK);
 
@@ -1357,15 +1362,15 @@ public class ParkingFrame extends JFrame{
         carPlateLogName.setFont(receiptFont);
         carPlateLogName.setForeground(Color.BLACK);
 
-        JLabel dateOutLog = new JLabel("Data de saída: " + dateOut);
+        JLabel dateOutLog = new JLabel("Data de saÃ­da: " + dateOut);
         dateOutLog.setFont(receiptFont);
         dateOutLog.setForeground(Color.BLACK);
         
-        JLabel timeOutLog = new JLabel("Horário de saída: " + timeOut);
+        JLabel timeOutLog = new JLabel("HorÃ¡rio de saÃ­da: " + timeOut);
         timeOutLog.setFont(receiptFont);
         timeOutLog.setForeground(Color.BLACK);
 
-        JLabel receiptValue = new JLabel("Preço a pagar: R$ " + value);
+        JLabel receiptValue = new JLabel("PreÃ§o a pagar: R$ " + value);
         receiptValue.setFont(receiptFont);
         receiptValue.setForeground(Color.BLACK);
 
