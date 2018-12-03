@@ -16,10 +16,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -34,6 +31,7 @@ import javax.swing.text.MaskFormatter;
 
 import system.ParkingLot;
 
+@SuppressWarnings("serial")
 public class BankFrame extends JFrame{
 
 	private static String confirmNormalButtonName	= "confirmNormalButton.png";
@@ -75,7 +73,6 @@ public class BankFrame extends JFrame{
 		super("Caixa");
 		super.setLayout(new GridBagLayout());		
 		GridBagConstraints modifier = new GridBagConstraints();
-		//super.setDefaultCloseOperation(JFrame.D.ISPOSE_ON_CLOSE);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		super.setSize(dim.width/2,dim.height/2);
@@ -86,15 +83,10 @@ public class BankFrame extends JFrame{
 		
 		super.setResizable(false);
 		super.setUndecorated(true);
-		//super.setAlwaysOnTop(true);
 		
 		if(source != null)
 			source.setEnabled(false);
 		
-//		URL iconURL = getClass().getResource("iconMB.png");
-//		ImageIcon iconFrame = new ImageIcon(iconURL);
-//		super.setIconImage(iconFrame.getImage());
-//		
 		getUIResources();
 		
 		SpringLayout bankPanelLabelLayout = new SpringLayout();
@@ -189,17 +181,20 @@ public class BankFrame extends JFrame{
 		
 		SpringLayout graphPanelLayout = new SpringLayout();
 		JPanel graphPanel = new JPanel(graphPanelLayout);
-		graphPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4, true));
+		graphPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		graphPanel.setBackground(Color.darkGray);
-		//graphPanel.setPreferredSize(new Dimension(300,300));
-		
-		//TODO - Passar a lista no graphics
+
 		graphic = new GraphingClass(toCalculate);
 		graphingPanel = graphic;
+		graphingPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		
 		JLabel intervalLabel2 = new JLabel("Gráfico (Carros pagos/dia):");
 		intervalLabel2.setForeground(Color.BLACK);
 		intervalLabel2.setFont(defaultFont.deriveFont(Font.BOLD, 25));
+		
+		JLabel graphicInfo = new JLabel("*OBS: Cada subdivisão inferior do gráfico, representa um dia!");
+		graphicInfo.setForeground(Color.BLACK);
+		graphicInfo.setFont(defaultFont.deriveFont(Font.ITALIC+Font.BOLD, 12));
 		
 		JLabel profitLabelName = new JLabel("Lucro neste invervalo: ");
 		profitLabelName.setForeground(Color.BLACK);
@@ -238,33 +233,28 @@ public class BankFrame extends JFrame{
 		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, intervalLabel, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.NORTH, initialLabel, 20, SpringLayout.SOUTH, intervalLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, initialLabel, 50, SpringLayout.WEST, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.EAST, initialLabel, -30, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, initialDate, 0, SpringLayout.VERTICAL_CENTER, initialLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, initialDate, 55, SpringLayout.EAST, initialLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, initialDate, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.EAST, initialDate, -30, SpringLayout.EAST, configurationPanel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.NORTH, finalLabel, 10, SpringLayout.SOUTH, initialLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalLabel, 50, SpringLayout.WEST, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalLabel, 0, SpringLayout.WEST, initialLabel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, finalDate, 0, SpringLayout.VERTICAL_CENTER, finalLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalDate, 55, SpringLayout.EAST, finalLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, finalDate, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.EAST, finalDate, -30, SpringLayout.EAST, configurationPanel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.NORTH, confirmButton, 30, SpringLayout.SOUTH, finalLabel);
 		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, confirmButton, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
-
-		//modifier.fill = GridBagConstraints.BOTH;		
+	
 		
 		
 		graphPanel.add(intervalLabel2);
-		/*
-		graphPanel.add(initialLabel2);
-		graphPanel.add(initialDate2);
-		graphPanel.add(finalLabel2);
-		graphPanel.add(finalDate2);
-		*/
+
 		graphPanel.add(graphingPanel);
+		graphPanel.add(graphicInfo);
 		graphPanel.add(profitLabelName);
 		graphPanel.add(profitLabel);
 		graphPanel.add(quantityLabelName);
@@ -280,14 +270,17 @@ public class BankFrame extends JFrame{
 		graphPanelLayout.putConstraint(SpringLayout.WEST, graphingPanel, 20, SpringLayout.WEST, graphPanel);
 		graphPanelLayout.putConstraint(SpringLayout.SOUTH, graphingPanel, -100, SpringLayout.SOUTH, graphPanel);
 		
-		graphPanelLayout.putConstraint(SpringLayout.NORTH, profitLabelName, 10, SpringLayout.SOUTH, graphingPanel);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabelName, 50, SpringLayout.WEST, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, graphicInfo, 5, SpringLayout.SOUTH, graphingPanel);
+		graphPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, graphicInfo, 0, SpringLayout.HORIZONTAL_CENTER, graphingPanel);
+		
+		graphPanelLayout.putConstraint(SpringLayout.NORTH, profitLabelName, 10, SpringLayout.SOUTH, graphicInfo);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabelName, 0, SpringLayout.WEST, graphingPanel);
 		
 		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, profitLabel, 0, SpringLayout.VERTICAL_CENTER, profitLabelName);
 		graphPanelLayout.putConstraint(SpringLayout.WEST, profitLabel, 5, SpringLayout.EAST, profitLabelName);
 		
 		graphPanelLayout.putConstraint(SpringLayout.NORTH, quantityLabelName, 10, SpringLayout.SOUTH, profitLabelName);
-		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabelName, 50, SpringLayout.WEST, graphPanel);
+		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabelName, 0, SpringLayout.WEST, graphingPanel);
 		
 		graphPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, quantityLabel, 0, SpringLayout.VERTICAL_CENTER, quantityLabelName);
 		graphPanelLayout.putConstraint(SpringLayout.WEST, quantityLabel, 5, SpringLayout.EAST, quantityLabelName);
@@ -325,7 +318,7 @@ public class BankFrame extends JFrame{
 		confirmButton.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent a) {
+			public void actionPerformed(ActionEvent a){
 				
 				LocalDateTime initialDateTime;
 				LocalDateTime finalDateTime;
@@ -344,12 +337,16 @@ public class BankFrame extends JFrame{
 					return;
 				}
 				
-			
+				if(!initialDateTime.isBefore(finalDateTime)) {
+					JOptionPane.showMessageDialog(BankFrame.this, "Data Inicial maior do que a Data Final!", "Aviso", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
 				toCalculate = parking.getQuantityArray(initialDateTime,finalDateTime);
 				//graphingPanel = new GraphingClass(toCalculate);
 				graphic.changeInput(toCalculate);
 	
-				profitLabel.setText("R$ " + 4);
+				profitLabel.setText("R$ " + parking.getPriceByInterval(initialDateTime, finalDateTime));
 				quantityLabel.setText(Integer.toString(parking.getQuantity(parking.toLocalDateTime(initialDate.getText()),parking.toLocalDateTime(finalDate.getText()))));
 				repaint();
 			}

@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import javax.swing.BorderFactory;
@@ -29,6 +28,7 @@ import javax.swing.text.MaskFormatter;
 
 import system.ParkingLot;
 
+@SuppressWarnings("serial")
 public class ConfigurationFrame extends JFrame{
 
 	private static String confirmNormalButtonName	= "confirmNormalButton.png";
@@ -53,20 +53,20 @@ public class ConfigurationFrame extends JFrame{
 	private JFormattedTextField carModifier;
 	private JFormattedTextField miniTruckModifier;
 	private JFormattedTextField motorcycleModifier;	
+	private JFormattedTextField perHourDivisorModifier;
 	
 	private MaskFormatter fmtPrice;
 	
 	private ParkingLot parking = ParkingLot.getInstance();
 	
 	
-	public ConfigurationFrame(Component source) {//
+	public ConfigurationFrame(Component source) {
 		super("Configuração");
 		super.setLayout(new GridBagLayout());		
 		GridBagConstraints modifier = new GridBagConstraints();
-		//super.setDefaultCloseOperation(JFrame.D.ISPOSE_ON_CLOSE);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		super.setSize(dim.width/4,dim.height/2);
+		super.setSize(dim.width/2,dim.height/2);
 		
 		
 		this.setLocation((dim.width - this.getSize().width)/2,(dim.height - this.getSize().height)/2);
@@ -78,11 +78,7 @@ public class ConfigurationFrame extends JFrame{
 		
 		if(source != null)
 			source.setEnabled(false);
-		
-//		URL iconURL = getClass().getResource("iconMB.png");
-//		ImageIcon iconFrame = new ImageIcon(iconURL);
-//		super.setIconImage(iconFrame.getImage());
-//		
+
 		getUIResources();
 		
 		SpringLayout configurationPanelLabelLayout = new SpringLayout();
@@ -120,50 +116,60 @@ public class ConfigurationFrame extends JFrame{
 		configurationPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
 		configurationPanel.setBackground(Color.darkGray);
 		
-		JLabel baseValueconfigurationLabel = new JLabel("Valor base para:");
+		JLabel baseValueconfigurationLabel = new JLabel("Modificar Valores");
 		baseValueconfigurationLabel.setForeground(Color.BLACK);
 		baseValueconfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 25));
 		
+		MaskFormatter fmtDivisor = null;
 		try{
 			fmtPrice = new MaskFormatter("R$ ##,##");
+			fmtDivisor = new MaskFormatter("##");
 		}
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
 		fmtPrice.setValidCharacters("0123456789");
+		fmtDivisor.setValidCharacters("0123456789");
+		
+		
 		
 		JLabel carConfigurationLabel = new JLabel("Carro: ");
 		carConfigurationLabel.setForeground(Color.BLACK);
-		carConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		carConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		
 		carModifier = new JFormattedTextField(fmtPrice);
-		carModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
+		carModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
 		carModifier.setHorizontalAlignment(JLabel.CENTER);
 		carModifier.setBorder(BorderFactory.createEmptyBorder());
-		carModifier.setText("R$ " + new DecimalFormat("##,##").format(parking.getMultCar()));
 		
-		//carModifier.setText("R$ " + Float.toString(parking.getMultCar()));
 		
 		JLabel motorcycleConfigurationLabel = new JLabel("Moto: ");
 		motorcycleConfigurationLabel.setForeground(Color.BLACK);
-		motorcycleConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		motorcycleConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		
 		motorcycleModifier = new JFormattedTextField(fmtPrice);
-		motorcycleModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
+		motorcycleModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
 		motorcycleModifier.setHorizontalAlignment(JLabel.CENTER);
 		motorcycleModifier.setBorder(BorderFactory.createEmptyBorder());
-		motorcycleModifier.setText("R$ " + new DecimalFormat("##,00").format(parking.getMultMotorcycle()));
 		
 		JLabel miniTruckConfigurationLabel = new JLabel("Caminhonete: ");
 		miniTruckConfigurationLabel.setForeground(Color.BLACK);
-		miniTruckConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 14));
+		miniTruckConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
 		
 		miniTruckModifier = new JFormattedTextField(fmtPrice);
-		miniTruckModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 14));
+		miniTruckModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
 		miniTruckModifier.setHorizontalAlignment(JLabel.CENTER);
 		miniTruckModifier.setBorder(BorderFactory.createEmptyBorder());
-		miniTruckModifier.setText("R$ " + new DecimalFormat("##,##").format(parking.getMultMiniTruck()));
+		
+		JLabel perHourDivisorConfigurationLabel = new JLabel("Divisor Por Hora:");
+		perHourDivisorConfigurationLabel.setForeground(Color.BLACK);
+		perHourDivisorConfigurationLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		perHourDivisorModifier = new JFormattedTextField(fmtDivisor);
+		perHourDivisorModifier.setFont(defaultFont.deriveFont(Font.PLAIN, 18));
+		perHourDivisorModifier.setHorizontalAlignment(JLabel.CENTER);
+		perHourDivisorModifier.setBorder(BorderFactory.createEmptyBorder());
 		
 		JButton confirmButton = new JButton(new ImageIcon(confirmNormalButton));
 		confirmButton.setBorder(BorderFactory.createEmptyBorder());
@@ -177,7 +183,7 @@ public class ConfigurationFrame extends JFrame{
 
             @Override
             public void mouseExited(MouseEvent e) {
-            	confirmButton.setIcon(new ImageIcon(confirmHoveredButton));
+            	confirmButton.setIcon(new ImageIcon(confirmNormalButton));
             }
 
             @Override
@@ -202,9 +208,10 @@ public class ConfigurationFrame extends JFrame{
 		modifier.weighty = 0.30;
 		modifier.gridx = 0;
 		modifier.gridy = 0;
+		modifier.gridwidth = 2;
 	
 		add(configurationLabelPanel, modifier);
-
+		modifier.gridwidth = 1;
 		
 		configurationPanel.add(baseValueconfigurationLabel);
 		configurationPanel.add(carConfigurationLabel);
@@ -213,34 +220,146 @@ public class ConfigurationFrame extends JFrame{
 		configurationPanel.add(motorcycleModifier);
 		configurationPanel.add(miniTruckConfigurationLabel);
 		configurationPanel.add(miniTruckModifier);
+		configurationPanel.add(perHourDivisorConfigurationLabel);
+		configurationPanel.add(perHourDivisorModifier);
 		configurationPanel.add(confirmButton);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, baseValueconfigurationLabel, 35, SpringLayout.NORTH, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, baseValueconfigurationLabel, 15, SpringLayout.NORTH, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, baseValueconfigurationLabel, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, carConfigurationLabel, 20, SpringLayout.SOUTH, baseValueconfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, carConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, carConfigurationLabel, -10, SpringLayout.NORTH, motorcycleConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, carConfigurationLabel, 0, SpringLayout.WEST, perHourDivisorConfigurationLabel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carModifier, 0, SpringLayout.VERTICAL_CENTER, carConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, carModifier, 55, SpringLayout.EAST, carConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, carModifier, 0, SpringLayout.NORTH, carConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, carModifier, 0, SpringLayout.SOUTH, carConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, carModifier, 20, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.EAST, carModifier, -30, SpringLayout.EAST, configurationPanel);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, motorcycleConfigurationLabel, 10, SpringLayout.SOUTH, carConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, motorcycleConfigurationLabel, -5, SpringLayout.VERTICAL_CENTER, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleConfigurationLabel, 0, SpringLayout.WEST, perHourDivisorConfigurationLabel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, motorcycleModifier, 0, SpringLayout.VERTICAL_CENTER, motorcycleConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleModifier, 55, SpringLayout.EAST, motorcycleConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, motorcycleModifier, 0, SpringLayout.NORTH, motorcycleConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, motorcycleModifier, 0, SpringLayout.SOUTH, motorcycleConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, motorcycleModifier, 20, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.EAST, motorcycleModifier, -30, SpringLayout.EAST, configurationPanel);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, miniTruckConfigurationLabel, 10, SpringLayout.SOUTH, motorcycleConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckConfigurationLabel, 50, SpringLayout.WEST, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, miniTruckConfigurationLabel, 5, SpringLayout.VERTICAL_CENTER, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckConfigurationLabel, 0, SpringLayout.WEST, perHourDivisorConfigurationLabel);
 		
 		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, miniTruckModifier, 0, SpringLayout.VERTICAL_CENTER, miniTruckConfigurationLabel);
-		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckModifier, 10, SpringLayout.EAST, miniTruckConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, miniTruckModifier, 0, SpringLayout.NORTH, miniTruckConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, miniTruckModifier, 0, SpringLayout.SOUTH, miniTruckConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, miniTruckModifier, 20, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.EAST, miniTruckModifier, -30, SpringLayout.EAST, configurationPanel);
 		
-		configurationPanelLayout.putConstraint(SpringLayout.NORTH, confirmButton, 30, SpringLayout.SOUTH, miniTruckConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, perHourDivisorConfigurationLabel, 10, SpringLayout.SOUTH, miniTruckConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.EAST, perHourDivisorConfigurationLabel, 10, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, perHourDivisorModifier, 0, SpringLayout.VERTICAL_CENTER, perHourDivisorConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.NORTH, perHourDivisorModifier, 0, SpringLayout.NORTH, perHourDivisorConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, perHourDivisorModifier, 0, SpringLayout.SOUTH, perHourDivisorConfigurationLabel);
+		configurationPanelLayout.putConstraint(SpringLayout.WEST, perHourDivisorModifier, 20, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+		configurationPanelLayout.putConstraint(SpringLayout.EAST, perHourDivisorModifier, -30, SpringLayout.EAST, configurationPanel);
+		
+		configurationPanelLayout.putConstraint(SpringLayout.SOUTH, confirmButton, -15, SpringLayout.SOUTH, configurationPanel);
 		configurationPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, confirmButton, 0, SpringLayout.HORIZONTAL_CENTER, configurationPanel);
+		
+		modifier.fill = GridBagConstraints.BOTH;
+		modifier.weightx = 1;
+		modifier.weighty = 1;
+		modifier.gridx = 1;
+		modifier.gridy = 1;
+		
+		add(configurationPanel, modifier);
+		
+		
+		SpringLayout defaultPanelLayout = new SpringLayout();
+		JPanel defaultPanel = new JPanel(defaultPanelLayout);
+		defaultPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, true));
+		defaultPanel.setBackground(Color.darkGray);
+		
+		
+		JLabel baseValueDefaultLabel = new JLabel("Preço por Hora");
+		baseValueDefaultLabel.setForeground(Color.BLACK);
+		baseValueDefaultLabel.setFont(defaultFont.deriveFont(Font.BOLD, 25));
+		
+		JLabel motorcycleDefaultLabel = new JLabel("Moto:");
+		motorcycleDefaultLabel.setForeground(Color.BLACK);
+		motorcycleDefaultLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		JLabel motorcycleDefaultNumberLabel = new JLabel("R$" + String.format("%.2f", parking.getMultMotorcycle()));
+		motorcycleDefaultNumberLabel.setForeground(Color.BLACK);
+		motorcycleDefaultNumberLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+
+		JLabel carDefaultLabel = new JLabel("Carro:");
+		carDefaultLabel.setForeground(Color.BLACK);
+		carDefaultLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		JLabel carDefaultNumberLabel = new JLabel("R$" + String.format("%.2f", parking.getMultCar()));
+		carDefaultNumberLabel.setForeground(Color.BLACK);
+		carDefaultNumberLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		JLabel miniTruckDefaultLabel = new JLabel("Caminhonete:");
+		miniTruckDefaultLabel.setForeground(Color.BLACK);
+		miniTruckDefaultLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		JLabel miniTruckDefaultNumberLabel = new JLabel("R$" + String.format("%.2f",parking.getMultMiniTruck()));
+		miniTruckDefaultNumberLabel.setForeground(Color.BLACK);
+		miniTruckDefaultNumberLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		
+		JLabel perHourDivisorDefaultLabel = new JLabel("Divisor por hora:");
+		perHourDivisorDefaultLabel.setForeground(Color.BLACK);
+		perHourDivisorDefaultLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		JLabel perHourDivisorDefaultNumberLabel = new JLabel(String.format("%.0f", parking.getPerHourDivisor()));
+		perHourDivisorDefaultNumberLabel.setForeground(Color.BLACK);
+		perHourDivisorDefaultNumberLabel.setFont(defaultFont.deriveFont(Font.BOLD, 18));
+		
+		
+		
+		defaultPanel.add(baseValueDefaultLabel);
+		defaultPanel.add(motorcycleDefaultLabel);
+		defaultPanel.add(motorcycleDefaultNumberLabel);
+		defaultPanel.add(carDefaultLabel);
+		defaultPanel.add(carDefaultNumberLabel);
+		defaultPanel.add(miniTruckDefaultLabel);
+		defaultPanel.add(miniTruckDefaultNumberLabel);
+		defaultPanel.add(perHourDivisorDefaultLabel);
+		defaultPanel.add(perHourDivisorDefaultNumberLabel);
+		
+		
+		defaultPanelLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, baseValueDefaultLabel, 0, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.NORTH, baseValueDefaultLabel, 15, SpringLayout.NORTH, defaultPanel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, carDefaultLabel, 0, SpringLayout.WEST, motorcycleDefaultLabel);
+		defaultPanelLayout.putConstraint(SpringLayout.SOUTH, carDefaultLabel, -10, SpringLayout.NORTH, motorcycleDefaultLabel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, carDefaultNumberLabel, 35, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, carDefaultNumberLabel, 0, SpringLayout.VERTICAL_CENTER, carDefaultLabel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, motorcycleDefaultLabel, 0, SpringLayout.WEST, miniTruckDefaultLabel);
+		defaultPanelLayout.putConstraint(SpringLayout.SOUTH, motorcycleDefaultLabel, -5, SpringLayout.VERTICAL_CENTER, defaultPanel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, motorcycleDefaultNumberLabel, 35, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, motorcycleDefaultNumberLabel, 0, SpringLayout.VERTICAL_CENTER, motorcycleDefaultLabel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, miniTruckDefaultLabel, 0, SpringLayout.WEST, perHourDivisorDefaultLabel);
+		defaultPanelLayout.putConstraint(SpringLayout.NORTH, miniTruckDefaultLabel, 5, SpringLayout.VERTICAL_CENTER, defaultPanel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, miniTruckDefaultNumberLabel, 35, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, miniTruckDefaultNumberLabel, 0, SpringLayout.VERTICAL_CENTER, miniTruckDefaultLabel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.EAST, perHourDivisorDefaultLabel, 10, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.NORTH, perHourDivisorDefaultLabel, 10, SpringLayout.SOUTH, miniTruckDefaultLabel);
+		
+		defaultPanelLayout.putConstraint(SpringLayout.WEST, perHourDivisorDefaultNumberLabel, 35, SpringLayout.HORIZONTAL_CENTER, defaultPanel);
+		defaultPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, perHourDivisorDefaultNumberLabel, 0, SpringLayout.VERTICAL_CENTER, perHourDivisorDefaultLabel);
+
+		
+		
 		
 		modifier.fill = GridBagConstraints.BOTH;
 		modifier.weightx = 1;
@@ -248,34 +367,56 @@ public class ConfigurationFrame extends JFrame{
 		modifier.gridx = 0;
 		modifier.gridy = 1;
 		
-		add(configurationPanel, modifier);
+		add(defaultPanel, modifier);
+		
+		
 		setVisible(true);
 		//---------------------------------------------------------------------------------Listeners
 		confirmButton.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				float carMult, motorcycleMult, miniTruckMult;
+				double carMult, motorcycleMult, miniTruckMult, perHourDivisor;
 				String temp;
-				try{
-					temp = carModifier.getText().substring(2).replace(",", ".");
-                    carMult = Float.parseFloat(temp);
-                    temp = motorcycleModifier.getText().substring(2).replace(",",".");
-                    motorcycleMult = Float.parseFloat(temp);
-                    temp = miniTruckModifier.getText().substring(2).replace(",",".");
-                    miniTruckMult = Float.parseFloat(temp);
 				
-					parking.setMultipliers(carMult, motorcycleMult, miniTruckMult);
+				try{
+	
+					temp = carModifier.getText().substring(2).replace(",", ".");
+					if(carModifier.getText().equals("R$   ,  ")) {
+						carMult = parking.getMultCar();
+					}
+					else carMult = Float.parseFloat(temp);
+					
+                    temp = motorcycleModifier.getText().substring(2).replace(",",".");
+                    if(motorcycleModifier.getText().equals("R$   ,  ")) {
+                    	motorcycleMult = parking.getMultMotorcycle();
+                    }
+                    else motorcycleMult = Float.parseFloat(temp);
+                    
+                    temp = miniTruckModifier.getText().substring(2).replace(",",".");
+                    if(miniTruckModifier.getText().equals("R$   ,  ")) {
+                    	miniTruckMult = parking.getMultMiniTruck();
+                    }
+                    else miniTruckMult = Float.parseFloat(temp);
+                    
+                    if(perHourDivisorModifier.getText().equals("  ")) {
+                    	perHourDivisor = parking.getPerHourDivisor();
+                    }
+                    else perHourDivisor = Float.parseFloat(perHourDivisorModifier.getText());
+				
+					parking.setMultipliers(carMult, motorcycleMult, miniTruckMult, perHourDivisor);
 				}
 				catch(NumberFormatException e){
-					JOptionPane.showMessageDialog(ConfigurationFrame.this,"Informe um valor válido!","Informativo",JOptionPane.WARNING_MESSAGE);
-					System.err.println(e);
-					
+					JOptionPane.showMessageDialog(ConfigurationFrame.this,"Informe valores válidos!","Informativo",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				if(source != null)
-					source.setEnabled(true);
-				dispose();
+				
+				
+				carDefaultNumberLabel.setText("R$" + String.format("%.2f",parking.getMultCar()));
+				motorcycleDefaultNumberLabel.setText("R$" + String.format("%.2f",parking.getMultMotorcycle()));
+				miniTruckDefaultNumberLabel.setText("R$" + String.format("%.2f",parking.getMultMiniTruck()));
+				perHourDivisorDefaultNumberLabel.setText(String.format("%.0f", parking.getPerHourDivisor()));
+				
 			}
 		});
 		
@@ -289,14 +430,6 @@ public class ConfigurationFrame extends JFrame{
 			}
 		});
 		
-		addWindowListener(new java.awt.event.WindowAdapter(){
-			@Override
-			public void windowClosing(java.awt.event.WindowEvent event)
-			{
-				//source.setEnabled(true);
-				//X on close
-			}
-		});
 	}
 
 
